@@ -280,7 +280,7 @@ git push -u origin main
 1. Supabase Dashboard → **Settings** → API
 2. Copiar:
    - `Project URL` → esto será `VITE_SUPABASE_URL`
-   - `anon / public` key → esto será `VITE_SUPABASE_ANON_KEY`
+   - `anon / public` key → esto será `VITE_SUPABASE_PUBLISHABLE_KEY`
 
 ---
 
@@ -300,7 +300,7 @@ git push -u origin main
 | `VITE_ADMIN_PASSCODE` | `contraseña-segura-aqui` |
 | `VITE_DATA_SOURCE` | `supabase` |
 | `VITE_SUPABASE_URL` | `https://xxxxx.supabase.co` |
-| `VITE_SUPABASE_ANON_KEY` | `eyJ...` (la clave anon de Supabase) |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | `eyJ...` (la clave anon de Supabase) |
 
 5. Click **Deploy** → en 1-2 minutos la tienda estará en `https://kalos-vzla.vercel.app`
 
@@ -320,7 +320,7 @@ En `.env` (local) y en Vercel Environment Variables:
 ```bash
 VITE_DATA_SOURCE=supabase
 VITE_SUPABASE_URL=https://xxxxx.supabase.co
-VITE_SUPABASE_ANON_KEY=eyJ...
+VITE_SUPABASE_PUBLISHABLE_KEY=eyJ...
 ```
 
 Los productos se leerán de Supabase, los pedidos se guardarán en Supabase, y la
@@ -398,7 +398,7 @@ VITE_DATA_SOURCE=local
 
 # Solo necesario si VITE_DATA_SOURCE=supabase
 VITE_SUPABASE_URL=https://xxxxx.supabase.co
-VITE_SUPABASE_ANON_KEY=eyJ...
+VITE_SUPABASE_PUBLISHABLE_KEY=eyJ...
 ```
 
 ---
