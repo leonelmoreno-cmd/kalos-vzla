@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import type { CheckoutForm, MrwData, PaymentMethod, ShippingMethod } from '@/types';
 import { useCart } from '@/context/CartContext';
@@ -44,6 +44,10 @@ export function CheckoutPage() {
   // Fallback manual (Nominatim)
   const [manualLoading, setManualLoading] = useState(false);
   const [manualError, setManualError] = useState<string | null>(null);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const update = <K extends keyof CheckoutForm>(key: K, value: CheckoutForm[K]) => {
     setForm((prev) => ({ ...prev, [key]: value }));

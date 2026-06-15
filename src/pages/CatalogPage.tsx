@@ -14,6 +14,10 @@ export function CatalogPage() {
   const [selected, setSelected] = useState<Product | null>(null);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
     let active = true;
     getProductRepository()
       .listAvailable()

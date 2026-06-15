@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/Button';
 import { WA_CONTACT_URL } from '@/lib/constants';
@@ -5,6 +6,10 @@ import { WA_CONTACT_URL } from '@/lib/constants';
 export function OrderSuccessPage() {
   const { state } = useLocation();
   const orderNumber: string | undefined = (state as { orderNumber?: string } | null)?.orderNumber;
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <div className="mx-auto flex max-w-md flex-col items-center px-4 py-20 text-center">
