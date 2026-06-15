@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import type { Product, ProductOption } from '@/types';
 import { getProductRepository, type ProductInput } from '@/repositories/productRepository';
+import { supabase } from '@/lib/supabaseClient';
 import { Field, TextInput, TextArea } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 
@@ -56,19 +57,46 @@ export function ProductEditPage() {
   const set = <K extends keyof ProductInput>(key: K, value: ProductInput[K]) =>
     setDraft((prev) => ({ ...prev, [key]: value }));
 
-  // ── Carga de imagen desde dispositivo ────────────────────────────────────
-  const handleImageFile = (file: File) => {
+  // ── Carga de imagen: Supabase Storage o base64 ──────────────────────────
+  const handleImageFile = async (file: File) => {
     if (!file.type.startsWith('image/')) {
       setError('El archivo debe ser una imagen (JPG, PNG, etc.).');
       return;
     }
+
     setImageLoading(true);
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      set('imageUrl', e.target?.result as string);
+    setError(null);
+
+    try {
+      // Si Supabase está disponible, subir a Storage
+      if (supabase) {
+        const fileName = `${Date.now()}-${file.name}`;
+        const { error: uploadError } = await supabase.storage
+          .from('products')
+          .upload(`products/${fileName}`, file, { upsert: true });
+
+        if (uploadError) throw uploadError;
+
+        // Obtener URL pública
+        const { data: publicUrl } = supabase.storage
+          .from('products')
+          .getPublicUrl(`products/${fileName}`);
+
+        set('imageUrl', publicUrl.publicUrl);
+      } else {
+        // Fallback: usar base64 (localStorage)
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          set('imageUrl', e.target?.result as string);
+        };
+        reader.readAsDataURL(file);
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Error al subir la imagen';
+      setError(`Error: ${msg}`);
+    } finally {
       setImageLoading(false);
-    };
-    reader.readAsDataURL(file);
+    }
   };
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
