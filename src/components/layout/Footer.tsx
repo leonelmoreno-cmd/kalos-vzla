@@ -49,7 +49,14 @@ export function Footer() {
               </svg>
               WhatsApp: {STORE.whatsappDisplay}
             </a>
-            <p className="mt-3 text-xs text-gray-400">{STORE.instagram}</p>
+            <a
+              href="https://www.instagram.com/kalos.vzla/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 inline-block text-xs text-gray-400 hover:text-bloom-300 transition"
+            >
+              {STORE.instagram}
+            </a>
           </div>
         </div>
 
