@@ -35,24 +35,62 @@ export interface GeoResult {
 
 /**
  * Geocodifica una dirección en Maracaibo usando Nominatim (sin API key).
- * Lanza un error si no encuentra resultados.
+ * Usa búsqueda estructurada para mejor precisión.
  */
 export async function geocodeAddress(address: string): Promise<GeoResult> {
-  const query = encodeURIComponent(`${address}, Maracaibo, Venezuela`);
-  const url = `https://nominatim.openstreetmap.org/search?q=${query}&format=json&limit=1&countrycodes=ve`;
+  // Limpia la dirección y la divide por comas
+  const trimmed = address.trim();
+
+  // Construye la URL con búsqueda estructurada
+  // Nominatim Doc: https://nominatim.org/release-docs/latest/api/Search/
+  const params = new URLSearchParams({
+    street: trimmed,
+    city: 'Maracaibo',
+    state: 'Zulia',
+    country: 'Venezuela',
+    format: 'json',
+    limit: '3',
+    countrycodes: 've',
+    // Prioriza resultados cercanos a Maracaibo (viewbox)
+    viewbox: '-72.5,10.5,-71.5,11.0',
+    bounded: '1',
+  });
+
+  const url = `https://nominatim.openstreetmap.org/search?${params.toString()}`;
 
   const resp = await fetch(url, {
-    headers: { 'Accept-Language': 'es', 'User-Agent': 'kalos.vzla-store/1.0' },
+    headers: {
+      'Accept-Language': 'es',
+      'User-Agent': 'kalos.vzla-store/1.0',
+    },
   });
-  if (!resp.ok) throw new Error('Error de red al calcular distancia');
 
-  const data = (await resp.json()) as Array<{ lat: string; lon: string; display_name: string }>;
-  if (!data.length) throw new Error('No se encontró la dirección en Maracaibo');
+  if (!resp.ok) {
+    throw new Error('Error de conexión al buscar la dirección');
+  }
+
+  const data = (await resp.json()) as Array<{
+    lat: string;
+    lon: string;
+    display_name: string;
+    importance?: number;
+  }>;
+
+  if (!data.length) {
+    throw new Error(
+      'No se encontró la dirección. Intenta con: "Av. Nombre, Edif. X, piso Y, apto Z"',
+    );
+  }
+
+  // Toma el resultado con mayor importancia (relevancia)
+  const best = data.reduce((prev, curr) =>
+    ((curr.importance ?? 0) > (prev.importance ?? 0) ? curr : prev)
+  );
 
   return {
-    lat: parseFloat(data[0].lat),
-    lng: parseFloat(data[0].lon),
-    displayName: data[0].display_name,
+    lat: parseFloat(best.lat),
+    lng: parseFloat(best.lon),
+    displayName: best.display_name,
   };
 }
 
