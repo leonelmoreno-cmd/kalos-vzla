@@ -71,11 +71,14 @@ export function ProductCustomizeModal({ product, onClose }: ProductCustomizeModa
         </div>
       }
     >
-      <ProductImage
-        src={product.imageUrl}
-        alt={product.name}
-        className="mb-4 aspect-video w-full rounded-2xl"
-      />
+      <div className="mb-4 flex max-h-80 items-center justify-center overflow-hidden rounded-2xl bg-bloom-50">
+        <ProductImage
+          src={product.imageUrl}
+          alt={product.name}
+          fit="contain"
+          className="max-h-80 w-full"
+        />
+      </div>
       <p className="text-sm text-gray-600">{product.description}</p>
 
       {(product.options ?? []).map((option) => (

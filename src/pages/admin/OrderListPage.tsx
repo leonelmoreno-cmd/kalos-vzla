@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { Order, OrderStatus } from '@/types';
-import { loadOrders, updateOrderAdminNotes, updateOrderStatus } from '@/lib/orders';
+import { getOrderRepository } from '@/repositories/orderRepository';
 import { ORDER_STATUS_COLORS, ORDER_STATUS_LABELS, STORE } from '@/lib/constants';
 import { formatPrice } from '@/lib/format';
 
@@ -26,22 +26,26 @@ function StatusBadge({ status }: { status: OrderStatus }) {
 }
 
 export function OrderListPage() {
+  const repo = getOrderRepository();
   const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [filter, setFilter] = useState<Filter>(ALL);
   const [search, setSearch] = useState('');
   const [notesDraft, setNotesDraft] = useState<Record<string, string>>({});
   const [savedNotes, setSavedNotes] = useState<Record<string, boolean>>({});
+  const [deleting, setDeleting] = useState<string | null>(null);
 
-  const reload = () => {
-    const all = loadOrders();
+  const reload = async () => {
+    const all = await repo.list();
     setOrders(all);
     const draft: Record<string, string> = {};
     all.forEach((o) => { draft[o.orderNumber] = o.adminNotes ?? ''; });
     setNotesDraft(draft);
+    setLoading(false);
   };
 
-  useEffect(() => { reload(); }, []);
+  useEffect(() => { void reload(); }, []);
 
   const visible = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -56,15 +60,29 @@ export function OrderListPage() {
     });
   }, [orders, filter, search]);
 
-  const handleStatus = (orderNumber: string, status: OrderStatus) => {
-    updateOrderStatus(orderNumber, status);
-    reload();
+  const handleStatus = async (orderNumber: string, status: OrderStatus) => {
+    await repo.updateStatus(orderNumber, status);
+    await reload();
   };
 
-  const handleSaveNotes = (orderNumber: string) => {
-    updateOrderAdminNotes(orderNumber, notesDraft[orderNumber] ?? '');
+  const handleSaveNotes = async (orderNumber: string) => {
+    await repo.updateAdminNotes(orderNumber, notesDraft[orderNumber] ?? '');
     setSavedNotes((prev) => ({ ...prev, [orderNumber]: true }));
     setTimeout(() => setSavedNotes((prev) => ({ ...prev, [orderNumber]: false })), 2000);
+  };
+
+  const handleDelete = async (orderNumber: string) => {
+    const ok = window.confirm(
+      `¿Eliminar el pedido ${orderNumber}? Esta acción no se puede deshacer.`,
+    );
+    if (!ok) return;
+    setDeleting(orderNumber);
+    try {
+      await repo.remove(orderNumber);
+      await reload();
+    } finally {
+      setDeleting(null);
+    }
   };
 
   return (
@@ -109,8 +127,16 @@ export function OrderListPage() {
         })}
       </div>
 
+      {/* Cargando */}
+      {loading && (
+        <div className="py-16 text-center text-gray-400">
+          <span className="inline-block h-8 w-8 animate-spin rounded-full border-2 border-bloom-300 border-t-transparent" />
+          <p className="mt-3 text-sm">Cargando pedidos…</p>
+        </div>
+      )}
+
       {/* Lista vacía */}
-      {visible.length === 0 && (
+      {!loading && visible.length === 0 && (
         <div className="py-16 text-center text-gray-400">
           <p className="text-4xl">📋</p>
           <p className="mt-3 text-base font-medium">
@@ -307,6 +333,30 @@ export function OrderListPage() {
                       </button>
                     ))}
                   </div>
+                </div>
+
+                {/* Eliminar pedido */}
+                <div className="border-t border-bloom-50 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => handleDelete(order.orderNumber)}
+                    disabled={deleting === order.orderNumber}
+                    className="inline-flex items-center gap-2 rounded-lg bg-red-50 px-3 py-2 text-xs font-semibold text-red-600 transition hover:bg-red-100 disabled:opacity-50"
+                  >
+                    {deleting === order.orderNumber ? (
+                      <>
+                        <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-red-400 border-t-transparent" />
+                        Eliminando…
+                      </>
+                    ) : (
+                      <>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                        Eliminar pedido
+                      </>
+                    )}
+                  </button>
                 </div>
               </div>
             )}

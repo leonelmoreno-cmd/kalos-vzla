@@ -4,6 +4,8 @@ interface ProductImageProps {
   src: string;
   alt: string;
   className?: string;
+  /** 'cover' recorta para llenar (tarjetas); 'contain' muestra el producto completo (modal). */
+  fit?: 'cover' | 'contain';
 }
 
 /** Deterministic floral gradient used as a fallback when no image loads. */
@@ -21,9 +23,10 @@ function gradientFor(seed: string): string {
 }
 
 /** Product image that gracefully falls back to a branded gradient + flower glyph. */
-export function ProductImage({ src, alt, className = '' }: ProductImageProps) {
+export function ProductImage({ src, alt, className = '', fit = 'cover' }: ProductImageProps) {
   const [failed, setFailed] = useState(false);
   const showFallback = !src || failed;
+  const fitClass = fit === 'contain' ? 'object-contain' : 'object-cover';
 
   if (showFallback) {
     return (
@@ -45,7 +48,7 @@ export function ProductImage({ src, alt, className = '' }: ProductImageProps) {
       alt={alt}
       loading="lazy"
       onError={() => setFailed(true)}
-      className={`object-cover ${className}`}
+      className={`${fitClass} ${className}`}
     />
   );
 }

@@ -49,7 +49,7 @@ export function CatalogPage() {
         {/* Título centrado */}
         <div className="mb-6 text-center">
           <p className="mb-1 text-xs font-semibold uppercase tracking-widest text-bloom-700">
-            Maracaibo, Venezuela
+            Maracaibo y toda Venezuela
           </p>
           <h1 className="text-3xl font-extrabold tracking-tight text-bloom-800 sm:text-4xl">
             kalos<span className="text-bloom-700">.vzla</span>

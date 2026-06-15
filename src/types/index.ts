@@ -89,6 +89,8 @@ export interface CheckoutForm {
 
 /** Un pedido registrado internamente. */
 export interface Order {
+  /** UUID de la fila en Supabase (ausente en modo localStorage). */
+  id?: string;
   /** Ej. "KLS-2601" */
   orderNumber: string;
   createdAt: string;

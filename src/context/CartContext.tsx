@@ -4,6 +4,7 @@ import {
   useEffect,
   useMemo,
   useReducer,
+  useState,
   type ReactNode,
 } from 'react';
 import type { CartItem, Product } from '@/types';
@@ -65,6 +66,8 @@ interface CartContextValue {
   items: CartItem[];
   count: number;
   total: number;
+  /** Se incrementa cada vez que se agrega un producto (para mostrar avisos). */
+  addSignal: number;
   add: (payload: AddPayload) => void;
   setQuantity: (id: string, quantity: number) => void;
   remove: (id: string) => void;
@@ -85,6 +88,7 @@ function loadInitial(): CartItem[] {
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, dispatch] = useReducer(reducer, [], loadInitial);
+  const [addSignal, setAddSignal] = useState(0);
 
   // Persist to localStorage on every change.
   useEffect(() => {
@@ -96,12 +100,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
       items,
       count: cartCount(items),
       total: cartTotal(items),
-      add: (payload) => dispatch({ type: 'add', payload }),
+      addSignal,
+      add: (payload) => {
+        dispatch({ type: 'add', payload });
+        setAddSignal((n) => n + 1);
+      },
       setQuantity: (id, quantity) => dispatch({ type: 'setQuantity', id, quantity }),
       remove: (id) => dispatch({ type: 'remove', id }),
       clear: () => dispatch({ type: 'clear' }),
     }),
-    [items],
+    [items, addSignal],
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

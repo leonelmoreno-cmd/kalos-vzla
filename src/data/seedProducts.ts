@@ -1,349 +1,244 @@
 import type { Product } from '@/types';
 
 /**
- * Catálogo kalos.vzla — Día del Padre 2026 + Corporativo.
+ * Catálogo kalos.vzla — Día del Padre 2026.
+ * Estructura tomada del catálogo oficial en PDF (18 opciones, 4 partes):
+ *   Parte 1 — Kits de Regalos        (Opción 1–4)
+ *   Parte 2 — Regalos Especiales     (Opción 5–11)
+ *   Parte 3 — Arreglos con Regalos   (Opción 12–15)
+ *   Parte 4 — Cuadros                (Opción 16–18)
  * Imágenes en /public/products/ (extraídas del PDF oficial).
- * Productos personalizados (cuadros, marcos) incluyen requiresPhotos=true.
  */
 
-// ─── Opción de tipo para cuadros ────────────────────────────────────────────
-const TIPO_CUADRO = {
-  id: 'tipo',
-  label: 'Tipo de cuadro',
+// ─── Opción de luz para cuadros ──────────────────────────────────────────────
+const TIPO_LUZ = {
+  id: 'luz',
+  label: 'Iluminación',
   choices: [
     { id: 'normal', label: 'Normal (sin luz)', priceDelta: 0 },
     { id: 'led', label: 'Con luz LED', priceDelta: 0 },
   ],
 };
 
-// ─── Cantidades corporativas ─────────────────────────────────────────────────
-function corpQty(unitPrice: number) {
-  return {
-    id: 'cantidad',
-    label: 'Cantidad',
-    choices: [
-      { id: '1', label: '1 unidad', priceDelta: 0 },
-      { id: '12', label: '12 unidades (docena)', priceDelta: unitPrice * 12 - unitPrice },
-      { id: '50', label: '50 unidades', priceDelta: unitPrice * 50 - unitPrice },
-      { id: '100', label: '100 unidades', priceDelta: unitPrice * 100 - unitPrice },
-    ],
-  };
-}
+const CAT = {
+  kits: 'Kits de Regalos',
+  especiales: 'Regalos Especiales',
+  arreglos: 'Arreglos con Regalos',
+  cuadros: 'Cuadros',
+} as const;
 
 export const seedProducts: Product[] = [
-
-  // ── PARTE 1: KITS DE REGALOS ──────────────────────────────────────────────
+  // ── PARTE 1: KITS DE REGALOS ───────────────────────────────────────────────
   {
     id: 'kit-01-billetera-reloj',
     name: 'Kit Papá — Opción 1',
-    description: 'Caja de madera con reloj, billetera y surtido de chocolates americanos (Snickers, M&M\'s, MilkyWay, Almond Joy). Incluye tarjeta personalizada.',
+    description:
+      'Caja de madera con reloj Casio, billetera de cuero y surtido de chocolates americanos (Snickers, Almond Joy, M&M\'s, MilkyWay). Incluye tarjeta personalizada.',
     basePrice: 25,
     imageUrl: '/products/kit-01-billetera-reloj.png',
     available: true,
-    category: 'Kits de Regalos',
+    category: CAT.kits,
     allowCardMessage: true,
   },
   {
     id: 'kit-02-billetera-mms',
     name: 'Kit Papá — Opción 2',
-    description: 'Caja de madera con reloj dorado, billetera texturizada y selección de chocolates (MilkyWay, M&M\'s, Almond Joy). Incluye tarjeta.',
+    description:
+      'Caja de madera con reloj Casio dorado, billetera texturizada y selección de chocolates (MilkyWay, M&M\'s, Almond Joy). Incluye tarjeta personalizada.',
     basePrice: 28,
     imageUrl: '/products/kit-02-billetera-mms.png',
     available: true,
-    category: 'Kits de Regalos',
+    category: CAT.kits,
     allowCardMessage: true,
   },
   {
     id: 'kit-03-ejecutivo',
-    name: 'Kit Papá Ejecutivo — Opción 3',
-    description: 'Caja de madera premium con reloj, billetera negra, bolígrafo y Snickers. Presentación elegante con tarjeta "Feliz Día del Padre".',
+    name: 'Kit Papá — Opción 3',
+    description:
+      'Caja de madera con correa de cuero, reloj Casio, billetera y chocolates (Snickers, Hershey\'s, MilkyWay). Incluye tarjeta personalizada.',
     basePrice: 34,
     imageUrl: '/products/kit-03-ejecutivo.png',
     available: true,
-    category: 'Kits de Regalos',
+    category: CAT.kits,
     allowCardMessage: true,
   },
   {
-    id: 'kit-04-tumbler',
-    name: 'Kit Papá con Tumbler — Opción 4',
-    description: 'Caja de madera con reloj, cinturón, Tumbler personalizado "PAPÁ" y chocolates surtidos (Snickers, MilkyWay, Almond Joy, Hershey\'s).',
+    id: 'kit-04-tumbler-papa',
+    name: 'Kit Papá — Opción 4',
+    description:
+      'Caja de madera con correa de cuero, tumbler personalizado PAPÁ y chocolates (Snickers, MilkyWay, Almond Joy, Hershey\'s). Incluye tarjeta personalizada.',
     basePrice: 35,
     imageUrl: '/products/kit-04-tumbler-papa.png',
     available: true,
-    category: 'Kits de Regalos',
+    category: CAT.kits,
     allowCardMessage: true,
   },
 
-  // ── PARTE 2: REGALOS ESPECIALES ───────────────────────────────────────────
+  // ── PARTE 2: REGALOS ESPECIALES ────────────────────────────────────────────
   {
     id: 'regalo-05-caja-especial',
-    name: 'Caja Especial Héroes — Opción 5',
-    description: 'Caja premium con cuadro "PAPÁ" personalizado con tu foto, billetera, Reese\'s, Almond Joy, libro de Marvel y figuras de superhéroes. ¡El regalo más completo!',
+    name: 'Sorpresa Marvel Papá — Opción 5',
+    description:
+      'Caja temática Marvel con cuadro PAPÁ de fotos, billetera de cuero y chocolates (M&M\'s, Reese\'s, Almond Joy). "Sorpresa para el mejor papá".',
     basePrice: 40,
     imageUrl: '/products/regalo-05-caja-especial.png',
     available: true,
-    category: 'Regalos Especiales',
-    allowCardMessage: true,
+    category: CAT.especiales,
     requiresPhotos: true,
-    note: '📸 Envía tus fotos por WhatsApp al finalizar el pedido.',
+    allowCardMessage: true,
   },
   {
     id: 'regalo-06-album-panini',
-    name: 'Álbum Panini "Nuestro Héroe" — Opción 6',
-    description: 'Álbum Panini personalizado "La Colección del Mejor Papá 2026" con sobres de cromos y fotos familiares. Incluye caja sorpresa. Una experiencia única.',
+    name: 'Álbum Panini Nuestro Héroe — Opción 6',
+    description:
+      'Álbum Panini personalizado "Nuestro Héroe #1 Papá" con cromos de fotos familiares y chocolates. Una colección única del mejor papá.',
     basePrice: 17,
     imageUrl: '/products/regalo-06-album-panini.png',
     available: true,
-    category: 'Regalos Especiales',
-    allowCardMessage: true,
+    category: CAT.especiales,
     requiresPhotos: true,
-    note: '📸 Envía tus fotos y el nombre del papá por WhatsApp al finalizar.',
+    allowCardMessage: true,
   },
   {
     id: 'regalo-07-cuadro-cromo',
-    name: 'Cuadro Cromo FIFA "El Mejor Papá" — Opción 7',
-    description: 'Marco foto estilo cromo oficial FIFA World Cup 2026. Tu papá como el jugador favorito. Con tu foto personalizada, nombre y equipo.',
+    name: 'Cromo Panini Enmarcado — Opción 7',
+    description:
+      'Marco con cromo Panini personalizado: "El Mejor Papá, eres nuestro jugador favorito del equipo de nuestro corazón".',
     basePrice: 18,
     imageUrl: '/products/regalo-07-cuadro-cromo.png',
     available: true,
-    category: 'Regalos Especiales',
-    allowCardMessage: true,
+    category: CAT.especiales,
     requiresPhotos: true,
-    note: '📸 Envía la foto de papá + su nombre + su equipo favorito por WhatsApp.',
+    allowCardMessage: false,
   },
   {
     id: 'regalo-08-kit-fifa',
-    name: 'Kit FIFA World Cup 2026 — Opción 8',
-    description: 'Caja con Tumbler oficial FIFA 2026, tarjeta personalizada y M&M\'s. Para el papá fanático del fútbol.',
+    name: 'Kit FIFA World Cup — Opción 8',
+    description:
+      'Caja temática FIFA World Cup 2026 con tumbler negro/dorado FIFA, adorno de la copa y M&M\'s. "¡Feliz Día Papá!".',
     basePrice: 28,
     imageUrl: '/products/regalo-08-kit-fifa.png',
     available: true,
-    category: 'Regalos Especiales',
+    category: CAT.especiales,
     allowCardMessage: true,
   },
   {
     id: 'regalo-09-kit-barcelona',
     name: 'Kit FC Barcelona — Opción 9',
-    description: 'Caja con Tumbler oficial FC Barcelona, chocolates surtidos y tarjeta "Feliz Día Papá". Para el culé de la familia.',
+    description:
+      'Caja FC Barcelona con tumbler FCB grabado, llavero "Papá Team" y surtido de chocolates. Para el papá culé.',
     basePrice: 26,
     imageUrl: '/products/regalo-09-kit-barcelona.png',
     available: true,
-    category: 'Regalos Especiales',
+    category: CAT.especiales,
     allowCardMessage: true,
   },
   {
     id: 'regalo-10-kit-real-madrid',
     name: 'Kit Real Madrid — Opción 10',
-    description: 'Caja con Tumbler oficial Real Madrid, M&M\'s, Snickers y tarjeta especial. Para el merengue de corazón.',
+    description:
+      'Caja Real Madrid con tumbler RM grabado en dorado, llavero "Papá Team" y surtido de chocolates. Para el papá merengue.',
     basePrice: 26,
     imageUrl: '/products/regalo-10-kit-real-madrid.png',
     available: true,
-    category: 'Regalos Especiales',
+    category: CAT.especiales,
     allowCardMessage: true,
   },
   {
     id: 'regalo-11-placa-acrilica',
-    name: 'Placa Acrílica "Mejor Papá" — Opción 11',
-    description: 'Placa acrílica premium grabada "Mejor Papá — Certificado por [nombre]" con foto familiar personalizada. Presentación en caja sorpresa con lazo.',
+    name: 'Placa Acrílica Mejor Papá — Opción 11',
+    description:
+      'Caja "Hay algo especial para ti aquí" con placa acrílica personalizada "Mejor Papá certificado por", con foto recortada y base dorada.',
     basePrice: 26,
     imageUrl: '/products/regalo-11-placa-acrilica.png',
     available: true,
-    category: 'Regalos Especiales',
-    allowCardMessage: true,
+    category: CAT.especiales,
     requiresPhotos: true,
-    note: '📸 Envía la foto y el nombre del certificante por WhatsApp.',
+    allowCardMessage: true,
   },
 
-  // ── PARTE 3: ARREGLOS CON REGALOS ────────────────────────────────────────
+  // ── PARTE 3: ARREGLOS CON REGALOS ──────────────────────────────────────────
   {
     id: 'arreglo-12-sombrero',
-    name: 'Arreglo Caja "Feliz Día del Padre" — Opción 12',
-    description: 'Arreglo en caja sombrero negra con chocolates (11 barras: Snickers, Twix, Hershey\'s, MilkyWay, M&M\'s, Reese\'s) y globo estrella azul.',
+    name: 'Arreglo de Chocolates — Opción 12',
+    description:
+      'Arreglo de chocolates variados (M&M\'s, Hershey\'s, Snickers, Twix, MilkyWay) con globo estrella, en caja "Feliz Día del Padre".',
     basePrice: 18,
     imageUrl: '/products/arreglo-12-sombrero.png',
     available: true,
-    category: 'Arreglos con Regalos',
+    category: CAT.arreglos,
     allowCardMessage: true,
   },
   {
     id: 'arreglo-13-papa-reloj',
-    name: 'Arreglo Caja "PAPÁ" con Reloj — Opción 13',
-    description: 'Arreglo en caja cilíndrica "PAPÁ" con reloj, Ferreros, M&M\'s, Snickers y globo estrella dorado. ¡Elegante y delicioso!',
+    name: 'Arreglo Papá con Reloj — Opción 13',
+    description:
+      'Arreglo PAPÁ con reloj Casio, Ferrero Rocher, chocolates (Snickers, M&M\'s) y globo estrella dorado "Feliz Día", en caja cilíndrica.',
     basePrice: 28,
     imageUrl: '/products/arreglo-13-papa-reloj.png',
     available: true,
-    category: 'Arreglos con Regalos',
+    category: CAT.arreglos,
     allowCardMessage: true,
   },
   {
     id: 'arreglo-14-papa-billetera',
-    name: 'Arreglo Caja "PAPÁ" con Billetera — Opción 14',
-    description: 'Arreglo en caja "PAPÁ" con billetera, tarjeta especial, Ferrero Rocher, chocolates surtidos y globo.',
+    name: 'Arreglo Papá con Billetera — Opción 14',
+    description:
+      'Arreglo PAPÁ con billetera de cuero, Ferrero Rocher, chocolates (Snickers, MilkyWay, M&M\'s) y globo estrella, en caja cilíndrica.',
     basePrice: 23,
     imageUrl: '/products/arreglo-14-papa-billetera.png',
     available: true,
-    category: 'Arreglos con Regalos',
+    category: CAT.arreglos,
     allowCardMessage: true,
   },
   {
     id: 'arreglo-15-papa-perfume',
-    name: 'Arreglo Caja "Feliz Día" con Perfume — Opción 15',
-    description: 'Arreglo en caja "Feliz Día" con perfume caballero, chocolates (Snickers, Hershey\'s, MilkyWay) y globo estrella negro "PAPÁ".',
+    name: 'Arreglo Papá con Perfume — Opción 15',
+    description:
+      'Arreglo "Feliz Día" con perfume Insuperabile Azul, chocolates (Snickers, Hershey\'s, MilkyWay, Almond Joy) y globos estrella, en caja cilíndrica.',
     basePrice: 20,
     imageUrl: '/products/arreglo-15-papa-perfume.png',
     available: true,
-    category: 'Arreglos con Regalos',
+    category: CAT.arreglos,
     allowCardMessage: true,
   },
 
-  // ── PARTE 4: CUADROS Y FOTOS ──────────────────────────────────────────────
+  // ── PARTE 4: CUADROS ───────────────────────────────────────────────────────
   {
     id: 'cuadro-16-collage',
     name: 'Cuadro Collage de Fotos — Opción 16',
-    description: 'Cuadro collage con múltiples fotos familiares en blanco y negro con foto principal a color. Diseños disponibles: toca en el enlace para elegir tu diseño favorito.',
+    description:
+      'Cuadro collage de fotos personalizado "Feliz Día Papá". Envíanos tus fotos favoritas y elegimos el diseño juntos.',
     basePrice: 20,
     imageUrl: '/products/cuadro-16-collage.png',
     available: true,
-    category: 'Cuadros y Fotos',
-    allowCardMessage: false,
+    category: CAT.cuadros,
     requiresPhotos: true,
-    note: '📸 Envía tus fotos por WhatsApp. Diseños disponibles al consultar.',
+    allowCardMessage: true,
   },
   {
     id: 'cuadro-17-papa-letras',
-    name: 'Cuadro "PAPÁ" con Fotos — Opción 17',
-    description: 'Cuadro con las letras "PAPÁ" formadas por fotos familiares. Disponible en versión normal o con luz LED iluminada. Un regalo que durará para siempre.',
+    name: 'Cuadro PAPÁ con Fotos — Opción 17',
+    description:
+      'Cuadro PAPÁ con letras rellenas de fotos y mensaje personalizado. Disponible normal o con luz LED para un efecto espectacular de noche.',
     basePrice: 28,
     imageUrl: '/products/cuadro-17-papa-letras.png',
     available: true,
-    category: 'Cuadros y Fotos',
-    options: [TIPO_CUADRO],
-    allowCardMessage: false,
+    category: CAT.cuadros,
     requiresPhotos: true,
-    note: '📸 Envía tus fotos familiares por WhatsApp al finalizar el pedido.',
+    allowCardMessage: true,
+    options: [TIPO_LUZ],
   },
   {
     id: 'cuadro-18-caja-ferrero',
-    name: 'Caja Marco con Ferreros — Opción 18',
-    description: 'Caja premium "¡Feliz Día del Padre!" con marco de madera y fotos estilo polaroid de la familia, acompañado de 5 Ferrero Rocher.',
+    name: 'Caja Foto + Ferrero — Opción 18',
+    description:
+      'Caja "Feliz Día del Padre" con cuadro tira de 3 fotos personalizadas y 6 Ferrero Rocher. Elegante y delicioso.',
     basePrice: 32,
     imageUrl: '/products/cuadro-18-caja-ferrero.png',
     available: true,
-    category: 'Cuadros y Fotos',
-    allowCardMessage: true,
+    category: CAT.cuadros,
     requiresPhotos: true,
-    note: '📸 Envía las fotos familiares por WhatsApp al finalizar el pedido.',
-  },
-
-  // ── CORPORATIVO ───────────────────────────────────────────────────────────
-  {
-    id: 'corp-llaveros-fifa',
-    name: 'Tag + Llaveros FIFA (Corporativo)',
-    description: 'Tag personalizable + llavero FIFA World Cup 2026. Logo de tu empresa sin costo adicional a partir de 24 unidades.\nDocena: $45 | 50 uds: $185 | 100 uds: $370',
-    basePrice: 3.70,
-    imageUrl: '/products/corp-llaveros-fifa.png',
-    available: true,
-    category: 'Corporativo',
-    options: [corpQty(3.70)],
-  },
-  {
-    id: 'corp-perfume',
-    name: 'Tag + Perfume (Corporativo)',
-    description: 'Tag personalizable + perfume caballero. Logo sin costo desde 24 uds.\nDocena: $36 | 50 uds: $150 | 100 uds: $300',
-    basePrice: 3.00,
-    imageUrl: '/products/corp-perfume.png',
-    available: true,
-    category: 'Corporativo',
-    options: [corpQty(3.00)],
-  },
-  {
-    id: 'corp-medias',
-    name: 'Tag + Medias (Corporativo)',
-    description: 'Tag personalizable + medias caballero. Logo sin costo desde 24 uds.\nDocena: $20 | 50 uds: $83 | 100 uds: $165',
-    basePrice: 1.65,
-    imageUrl: '/products/corp-medias.png',
-    available: true,
-    category: 'Corporativo',
-    options: [corpQty(1.65)],
-  },
-  {
-    id: 'corp-boligrafo',
-    name: 'Tag + Bolígrafo (Corporativo)',
-    description: 'Tag personalizable + bolígrafo. Logo sin costo desde 24 uds.\nDocena: $18 | 50 uds: $75 | 100 uds: $150',
-    basePrice: 1.50,
-    imageUrl: '/products/corp-boligrafo.png',
-    available: true,
-    category: 'Corporativo',
-    options: [corpQty(1.50)],
-  },
-  {
-    id: 'corp-chocolate',
-    name: 'Tag + 1 Chocolate (Corporativo)',
-    description: 'Tag personalizable + 1 chocolate. Logo sin costo desde 24 uds.\nDocena: $15 | 50 uds: $63 | 100 uds: $126',
-    basePrice: 1.30,
-    imageUrl: '/products/corp-chocolate.png',
-    available: true,
-    category: 'Corporativo',
-    options: [corpQty(1.30)],
-  },
-  {
-    id: 'corp-kit-chocolates',
-    name: 'Kit de Chocolates (Corporativo)',
-    description: 'Kit surtido de chocolates premium. Logo sin costo desde 24 uds.\nDocena: $36 | 50 uds: $149 | 100 uds: $297',
-    basePrice: 3.00,
-    imageUrl: '/products/corp-kit-chocolates.png',
-    available: true,
-    category: 'Corporativo',
-    options: [corpQty(3.00)],
-  },
-  {
-    id: 'corp-cesta-mani',
-    name: 'Cesta de Maní (Corporativo)',
-    description: 'Cesta individual de maní premium. Logo sin costo desde 24 uds.\nDocena: $24 | 50 uds: $100 | 100 uds: $200',
-    basePrice: 2.00,
-    imageUrl: '/products/corp-cesta-mani.png',
-    available: true,
-    category: 'Corporativo',
-    options: [corpQty(2.00)],
-  },
-  {
-    id: 'corp-ferreros',
-    name: 'Tag + Ferreros (Corporativo)',
-    description: 'Tag personalizable + Ferrero Rocher. Logo sin costo desde 24 uds.\nDocena: $22 | 50 uds: $92 | 100 uds: $184',
-    basePrice: 1.85,
-    imageUrl: '/products/corp-ferreros.png',
-    available: true,
-    category: 'Corporativo',
-    options: [corpQty(1.85)],
-  },
-  {
-    id: 'corp-moneda-chocolate',
-    name: 'Tag + Moneda de Chocolate (Corporativo)',
-    description: 'Tag personalizable + moneda de chocolate. Logo sin costo desde 24 uds.\nDocena: $10 | 50 uds: $41 | 100 uds: $82',
-    basePrice: 0.85,
-    imageUrl: '/products/corp-moneda-chocolate.png',
-    available: true,
-    category: 'Corporativo',
-    options: [corpQty(0.85)],
-  },
-  {
-    id: 'corp-llavero-impreso',
-    name: 'Tag + Llavero Impreso (Corporativo)',
-    description: 'Tag + llavero con impresión personalizada (logo gratis). Docena: $21 | 50 uds: $88 | 100 uds: $175',
-    basePrice: 1.75,
-    imageUrl: '/products/corp-llavero-impreso.png',
-    available: true,
-    category: 'Corporativo',
-    options: [corpQty(1.75)],
-  },
-  {
-    id: 'corp-llavero-rotulado',
-    name: 'Tag + Llavero Rotulado (Corporativo)',
-    description: 'Tag + llavero rotulado con personalización gratuita. Docena: $43 | 50 uds: $179 | 100 uds: $357',
-    basePrice: 3.60,
-    imageUrl: '/products/corp-llavero-rotulado.png',
-    available: true,
-    category: 'Corporativo',
-    options: [corpQty(3.60)],
+    allowCardMessage: true,
   },
 ];

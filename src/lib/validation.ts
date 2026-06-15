@@ -29,9 +29,12 @@ export function validatePhone(phone: string): FieldError {
 }
 
 export function validateAddress(address: string | undefined, isDelivery: boolean): FieldError {
+  // La referencia/dirección exacta es OPCIONAL: el precio del delivery se calcula
+  // por GPS o por la dirección escrita en el calculador. Aquí solo validamos
+  // formato mínimo si el cliente decidió escribir algo.
   if (!isDelivery) return undefined;
-  if (!address || !address.trim()) return 'La dirección de entrega es requerida.';
-  if (address.trim().length < 6) return 'Por favor ingresa una dirección completa.';
+  const trimmed = address?.trim() ?? '';
+  if (trimmed && trimmed.length < 4) return 'La referencia es muy corta.';
   return undefined;
 }
 

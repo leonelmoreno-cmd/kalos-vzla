@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { Order, OrderStatus } from '@/types';
-import { loadOrders } from '@/lib/orders';
+import { getOrderRepository } from '@/repositories/orderRepository';
 import { ORDER_STATUS_COLORS, ORDER_STATUS_LABELS } from '@/lib/constants';
 import { formatPrice } from '@/lib/format';
 
@@ -46,7 +46,14 @@ const STATUS_RING: Record<OrderStatus, string> = {
 export function AdminDashboardPage() {
   const [orders, setOrders] = useState<Order[]>([]);
 
-  useEffect(() => { setOrders(loadOrders()); }, []);
+  useEffect(() => {
+    let active = true;
+    getOrderRepository()
+      .list()
+      .then((list) => { if (active) setOrders(list); })
+      .catch(() => { /* dashboard tolera lista vacía */ });
+    return () => { active = false; };
+  }, []);
 
   const stats = useMemo(() => {
     const today = new Date().toDateString();

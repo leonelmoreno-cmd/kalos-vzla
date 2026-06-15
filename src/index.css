@@ -34,6 +34,18 @@
   }
 }
 
+/* Animación del aviso "agregado al carrito" */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Quitar flechas de inputs numéricos */
 input[type='number']::-webkit-outer-spin-button,
 input[type='number']::-webkit-inner-spin-button {
