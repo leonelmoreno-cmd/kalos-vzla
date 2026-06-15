@@ -16,6 +16,16 @@ const TABLE = 'products';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 function fromRow(row: any): Product {
+  // Parse options if it's a string (from Supabase JSON column)
+  let options = row.options;
+  if (typeof options === 'string') {
+    try {
+      options = JSON.parse(options);
+    } catch {
+      options = undefined;
+    }
+  }
+
   return {
     id: row.id,
     name: row.name,
@@ -24,7 +34,7 @@ function fromRow(row: any): Product {
     imageUrl: row.image_url ?? '',
     available: !!row.available,
     category: row.category ?? undefined,
-    options: row.options ?? undefined,
+    options: options ?? undefined,
     allowCardMessage: !!row.allow_card_message,
   };
 }
