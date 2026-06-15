@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  html {
+    -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-bloom-50 text-gray-900 antialiased;
+    font-family: 'Poppins', system-ui, sans-serif;
+  }
+}
+
+@layer components {
+  .input-base {
+    @apply w-full rounded-xl border border-bloom-200 bg-white px-4 py-3 text-gray-800
+      placeholder:text-gray-400 outline-none transition
+      focus:border-bloom-700 focus:ring-2 focus:ring-bloom-100;
+  }
+
+  .input-error {
+    @apply border-red-400 focus:border-red-400 focus:ring-red-200;
+  }
+
+  .card {
+    @apply rounded-2xl bg-white shadow-sm ring-1 ring-bloom-100/80;
+  }
+}
+
+/* Quitar flechas de inputs numéricos */
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type='number'] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}

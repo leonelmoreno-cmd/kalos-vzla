@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" fill="#fdf2f8" />
+  <g transform="translate(256 232)">
+    <g fill="#db2777">
+      <ellipse cx="0" cy="-112" rx="52" ry="72" />
+      <ellipse cx="0" cy="112" rx="52" ry="72" />
+      <ellipse cx="-112" cy="0" rx="72" ry="52" />
+      <ellipse cx="112" cy="0" rx="72" ry="52" />
+      <ellipse cx="-79" cy="-79" rx="64" ry="48" transform="rotate(45)" />
+      <ellipse cx="79" cy="-79" rx="64" ry="48" transform="rotate(-45)" />
+    </g>
+    <circle r="50" fill="#fbbf24" />
+  </g>
+  <rect x="240" y="300" width="32" height="150" rx="16" fill="#16a34a" />
+  <text x="256" y="492" font-family="Poppins, sans-serif" font-size="40" font-weight="700"
+        fill="#9d174d" text-anchor="middle">JungleClick</text>
+</svg>
