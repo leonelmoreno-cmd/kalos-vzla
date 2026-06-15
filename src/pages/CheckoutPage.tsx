@@ -215,72 +215,88 @@ export function CheckoutPage() {
             <p className="text-xs font-medium text-red-500">{errors.shipping}</p>
           )}
 
-          {/* ── Delivery: geolocalización ── */}
+          {/* ── Delivery: opción GPS o dirección manual ── */}
           {isDelivery && (
             <div className="mt-3 space-y-3 rounded-xl bg-bloom-50 p-4">
+              <p className="text-sm font-medium text-gray-700 mb-3">
+                Elige cómo deseas ingresar tu dirección de entrega:
+              </p>
 
-              {/* Paso 1: detectar ubicación */}
-              {geoStatus === 'idle' && (
-                <div className="space-y-2">
-                  <p className="text-sm font-medium text-gray-700">
-                    Detecta tu ubicación para calcular el precio del delivery
-                  </p>
-                  <button
-                    type="button"
-                    onClick={handleGeoLocate}
-                    className="inline-flex items-center gap-2 rounded-xl bg-bloom-700 px-5 py-2.5 text-sm font-semibold text-white hover:bg-bloom-800 transition"
-                  >
-                    📍 Compartir mi ubicación
-                  </button>
-                </div>
-              )}
-
-              {geoStatus === 'loading' && (
-                <div className="flex items-center gap-3 text-sm text-gray-500">
-                  <span className="h-5 w-5 animate-spin rounded-full border-2 border-bloom-600 border-t-transparent" />
-                  Obteniendo tu ubicación…
-                </div>
-              )}
-
-              {/* Resultado exitoso */}
-              {geoStatus === 'success' && geoResult && (
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between rounded-xl bg-white px-4 py-3 ring-1 ring-bloom-200">
-                    <div>
-                      <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">Precio del delivery</p>
-                      <p className="text-lg font-bold text-bloom-700">{formatPrice(geoResult.price)}</p>
-                      <p className="text-xs text-gray-400">{geoResult.km.toFixed(1)} km desde nuestra tienda</p>
+              {/* Dos columnas: GPS vs Dirección manual */}
+              <div className="grid gap-3 sm:grid-cols-2">
+                {/* Opción 1: GPS */}
+                <div
+                  className={`rounded-lg border-2 p-3 transition ${
+                    geoStatus !== 'idle' && geoStatus !== 'manual'
+                      ? 'border-bloom-500 bg-white'
+                      : 'border-gray-200 bg-white hover:border-bloom-300'
+                  }`}
+                >
+                  <h3 className="mb-2 text-sm font-semibold text-gray-800">📍 Mi ubicación</h3>
+                  <p className="mb-3 text-xs text-gray-500">Usa GPS para detectar tu ubicación actual</p>
+                  {geoStatus === 'loading' && (
+                    <div className="flex items-center gap-2 text-sm text-gray-500">
+                      <span className="h-4 w-4 animate-spin rounded-full border-2 border-bloom-600 border-t-transparent" />
+                      Detectando…
                     </div>
-                    <span className="text-3xl">✅</span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={resetDelivery}
-                    className="text-xs text-gray-400 hover:text-red-500"
-                  >
-                    Volver a detectar ubicación
-                  </button>
+                  )}
+                  {geoStatus === 'success' && geoResult && (
+                    <div className="space-y-2">
+                      <div className="rounded-lg bg-bloom-100 p-2">
+                        <p className="text-xs font-bold text-bloom-700">{formatPrice(geoResult.price)}</p>
+                        <p className="text-xs text-bloom-600">{geoResult.km.toFixed(1)} km</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleGeoLocate}
+                        className="w-full rounded-lg bg-bloom-100 px-3 py-1.5 text-xs font-semibold text-bloom-700 transition hover:bg-bloom-200"
+                      >
+                        ✓ Usar esta ubicación
+                      </button>
+                    </div>
+                  )}
+                  {geoStatus === 'error' && (
+                    <p className="text-xs text-red-500">{geoError}</p>
+                  )}
+                  {(geoStatus === 'idle' || geoStatus === 'error') && (
+                    <button
+                      type="button"
+                      onClick={handleGeoLocate}
+                      className="w-full rounded-lg bg-bloom-700 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-bloom-800"
+                    >
+                      Detectar ubicación
+                    </button>
+                  )}
                 </div>
-              )}
 
-              {/* Error de geolocalización → fallback manual */}
-              {geoStatus === 'error' && (
-                <div className="space-y-3">
-                  <p className="text-sm text-red-500">{geoError}</p>
+                {/* Opción 2: Dirección manual */}
+                <div
+                  className={`rounded-lg border-2 p-3 transition ${
+                    geoStatus === 'manual'
+                      ? 'border-bloom-500 bg-white'
+                      : 'border-gray-200 bg-white hover:border-bloom-300'
+                  }`}
+                >
+                  <h3 className="mb-2 text-sm font-semibold text-gray-800">🏠 Mi dirección</h3>
+                  <p className="mb-3 text-xs text-gray-500">Escribe la dirección (propia o de alguien más)</p>
                   <button
                     type="button"
                     onClick={() => setGeoStatus('manual')}
-                    className="text-sm font-medium text-bloom-600 underline"
+                    className={`w-full rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
+                      geoStatus === 'manual'
+                        ? 'bg-bloom-700 text-white hover:bg-bloom-800'
+                        : 'bg-bloom-100 text-bloom-700 hover:bg-bloom-200'
+                    }`}
                   >
-                    Ingresar dirección manualmente
+                    Ingresar dirección
                   </button>
                 </div>
-              )}
+              </div>
 
-              {/* Fallback manual */}
+              {/* Campo de dirección manual */}
               {geoStatus === 'manual' && (
-                <div className="space-y-2" data-error={!!manualError}>
-                  <Field label="Tu dirección en Maracaibo" required>
+                <div className="space-y-2 rounded-lg border border-bloom-200 bg-white p-3" data-error={!!manualError}>
+                  <Field label="Dirección en Maracaibo" required>
                     <TextArea
                       rows={2}
                       value={form.address ?? ''}
@@ -302,21 +318,32 @@ export function CheckoutPage() {
                 </div>
               )}
 
-              {/* Dirección de entrega (siempre visible cuando hay precio calculado) */}
-              {(geoStatus === 'success') && (
+              {/* Resumen de precio calculado */}
+              {(geoStatus === 'success' || (geoStatus === 'manual' && form.deliveryPrice)) && geoResult && (
+                <div className="flex items-center justify-between rounded-lg bg-white p-3 ring-1 ring-bloom-200">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">Precio del delivery</p>
+                    <p className="text-lg font-bold text-bloom-700">{formatPrice(geoResult.price)}</p>
+                  </div>
+                  <span className="text-2xl">✅</span>
+                </div>
+              )}
+
+              {/* Campo de dirección exacta (cuando hay precio calculado) */}
+              {(geoStatus === 'success' || (geoStatus === 'manual' && form.deliveryPrice)) && (
                 <div data-error={!!errors.address}>
                   <Field
-                    label="Dirección exacta para el delivery"
+                    label="Dirección exacta para el repartidor"
                     required
                     error={errors.address}
-                    hint="Calle, edificio, piso, apto y referencias para el repartidor"
+                    hint="Añade referencias: piso, apartamento, portón, color de puerta, etc."
                   >
                     <TextArea
                       rows={2}
                       value={form.address ?? ''}
                       hasError={!!errors.address}
                       onChange={(e) => update('address', e.target.value)}
-                      placeholder="Ej: Av. Las Delicias, Edif. Sol, piso 2, apto 2B, frente al CC Sambil"
+                      placeholder="Ej: Piso 5, apto 5C, al lado de la farmacia"
                     />
                   </Field>
                 </div>

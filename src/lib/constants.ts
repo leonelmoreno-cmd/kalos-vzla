@@ -22,7 +22,7 @@ export const WA_CONTACT_URL =
 
 /** Métodos de entrega */
 export const SHIPPING_METHODS: { value: ShippingMethod; label: string; hint: string }[] = [
-  { value: 'delivery', label: 'Delivery', hint: 'A domicilio en Maracaibo (precio por km)' },
+  { value: 'delivery', label: 'Delivery', hint: 'A domicilio en Maracaibo' },
   { value: 'pickup', label: 'Retiro en tienda', hint: 'Av. Padilla, frente al CC Ciudad Chinita' },
   { value: 'national_mrw', label: 'Envío Nacional MRW', hint: 'Envío a cualquier ciudad de Venezuela' },
 ];
