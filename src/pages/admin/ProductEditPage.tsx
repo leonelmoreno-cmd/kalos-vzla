@@ -101,13 +101,13 @@ export function ProductEditPage() {
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) handleImageFile(file);
+    if (file) void handleImageFile(file);
   };
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     const file = e.dataTransfer.files?.[0];
-    if (file) handleImageFile(file);
+    if (file) void handleImageFile(file);
   };
 
   // ── Opciones ──────────────────────────────────────────────────────────────
