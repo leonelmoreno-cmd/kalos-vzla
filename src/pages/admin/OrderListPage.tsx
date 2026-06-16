@@ -205,6 +205,20 @@ export function OrderListPage() {
                       Método de pago
                     </p>
                     <p className="text-sm text-gray-700">{order.form.payment}</p>
+                    {order.form.receiptUrl && (
+                      <a
+                        href={order.form.receiptUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-2 inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 hover:underline"
+                      >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" strokeLinecap="round" strokeLinejoin="round" />
+                          <polyline points="13 2 13 9 20 9" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                        Ver comprobante
+                      </a>
+                    )}
                   </div>
                 </div>
 
