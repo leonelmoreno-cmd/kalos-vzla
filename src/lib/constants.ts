@@ -35,7 +35,7 @@ export const PAYMENT_DETAILS: Record<PaymentMethod, string | null> = {
   zinli: '[Completar: datos de la cuenta Zinli]',
   pos: null,
   atc: '[Completar: datos para transferencia ATC]',
-  pago_movil: '[Completar: banco, cédula y teléfono de Pago Móvil]',
+  pago_movil: '💳 El monto en bolívares te será indicado por WhatsApp. Nuestro equipo te contactará con la cantidad exacta según la tasa actual.',
 };
 
 /** Métodos de pago */
