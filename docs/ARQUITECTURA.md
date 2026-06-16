@@ -75,7 +75,8 @@ desde cualquier navegador sin tocar código.
 └────────────────────────────────────────────────────────┘
 ```
 
-**Fase actual (1):** localStorage para pedidos + catálogo. Supabase listo para conectar.
+**Estado actual:** catálogo y pedidos viven en **Supabase** (`VITE_DATA_SOURCE=supabase`).
+El modo `local` (localStorage) sigue disponible como respaldo offline / desarrollo.
 
 ---
 
@@ -95,7 +96,7 @@ JungleClickFlower/
 │   ├── lib/
 │   │   ├── constants.ts      ← Datos de la tienda, métodos de pago/envío
 │   │   ├── delivery.ts       ← GPS (Haversine) + Nominatim para precio de delivery
-│   │   ├── orders.ts         ← CRUD de pedidos en localStorage
+│   │   ├── googleMaps.ts     ← Carga del SDK de Google Maps (Places) con fallback
 │   │   ├── whatsapp.ts       ← Construye el mensaje y URL de WhatsApp
 │   │   ├── validation.ts     ← Validación del formulario de checkout
 │   │   ├── cart.ts           ← Cálculo de precios y totales del carrito
@@ -103,17 +104,21 @@ JungleClickFlower/
 │   │   └── supabaseClient.ts ← Cliente Supabase (activo cuando se configuren las credenciales)
 │   ├── repositories/
 │   │   ├── productRepository.ts          ← Interfaz + factory getProductRepository()
-│   │   ├── localProductRepository.ts     ← localStorage (actual)
-│   │   └── supabaseProductRepository.ts  ← Supabase (listo para activar)
+│   │   ├── localProductRepository.ts     ← Productos en localStorage
+│   │   ├── supabaseProductRepository.ts  ← Productos en Supabase
+│   │   ├── orderRepository.ts            ← Interfaz + factory getOrderRepository()
+│   │   ├── localOrderRepository.ts       ← Pedidos en localStorage
+│   │   └── supabaseOrderRepository.ts    ← Pedidos en Supabase
 │   ├── context/
-│   │   ├── CartContext.tsx       ← Estado global del carrito
+│   │   ├── CartContext.tsx       ← Estado global del carrito (+ aviso "agregado")
 │   │   └── AdminAuthContext.tsx  ← Sesión de la administradora
 │   ├── components/
-│   │   ├── layout/           ← Header, Footer, Layout
+│   │   ├── layout/           ← Header, Footer, Layout (toast de carrito)
 │   │   ├── ui/               ← Button, Input, RadioGroup, QuantityStepper, Modal
 │   │   ├── ProductCard.tsx
 │   │   ├── ProductCustomizeModal.tsx
 │   │   ├── CartDrawer.tsx
+│   │   ├── AddressAutocomplete.tsx ← Autocompletado de Google Places (checkout)
 │   │   └── WhatsAppFloat.tsx  ← Botón flotante de WhatsApp
 │   └── pages/
 │       ├── CatalogPage.tsx        ← Inicio / Tienda
@@ -123,13 +128,15 @@ JungleClickFlower/
 │           ├── AdminLayout.tsx       ← Guard de auth + navegación
 │           ├── AdminLoginPage.tsx    ← Login con contraseña (→ Supabase Auth en Fase 2)
 │           ├── AdminDashboardPage.tsx ← Panel: stats, últimos pedidos, accesos rápidos
+│           ├── AdminReportsPage.tsx  ← Reportes de ventas por día + export CSV
 │           ├── ProductListPage.tsx   ← Lista, ocultar, eliminar productos
 │           ├── ProductEditPage.tsx   ← Crear/editar producto (foto, título, precio, opciones)
-│           └── OrderListPage.tsx     ← Gestión de pedidos: filtros, notas, estado
+│           └── OrderListPage.tsx     ← Gestión de pedidos: filtros, notas, estado, eliminar
 │
 ├── docs/
-│   ├── ARQUITECTURA.md       ← Este archivo
-│   └── supabase-schema.sql   ← Schema SQL listo para ejecutar en Supabase
+│   ├── ARQUITECTURA.md              ← Este archivo
+│   ├── supabase-schema.sql          ← Schema de products + Storage
+│   └── supabase-orders-migration.sql ← Schema de orders (secuencia KLS-XXXX)
 │
 ├── .env                      ← Variables de entorno (no subir a GitHub)
 ├── .env.example              ← Plantilla de variables
@@ -178,7 +185,9 @@ Cuando el cliente elige Delivery:
 2. Se toman las coordenadas GPS del cliente
 3. Se calcula la distancia en km con Haversine desde la tienda (Torres del Saladillo)
 4. Precio: `km × $0.50`, mínimo `$1.50` (dato interno, no se muestra al cliente)
-5. Si se niega el GPS, puede ingresar su dirección manualmente → Nominatim la geocodifica
+5. Si prefiere escribir la dirección (propia o de otra persona): con `VITE_GOOGLE_MAPS_API_KEY`
+   usa el **autocompletado de Google Places** (coordenadas exactas); sin token, cae a
+   **Nominatim** (OpenStreetMap). El punto de referencia exacto es opcional.
 
 ---
 
@@ -203,7 +212,8 @@ Diseñado para usuario no técnico:
 - Nombre, descripción, precio USD, categoría
 - Opciones/variantes con precios adicionales
 - "Permite mensaje de tarjeta"
-- La imagen se guarda en base64 (sin servidor — Fase 2: Supabase Storage)
+- La imagen se sube a **Supabase Storage** (bucket `products`) y se guarda su URL pública.
+  En modo `local` sin Supabase, se guarda como base64.
 
 #### Pedidos (`/admin/orders`)
 - Búsqueda por número, nombre o teléfono
@@ -211,6 +221,13 @@ Diseñado para usuario no técnico:
 - Por cada pedido: cliente, entrega, productos, nota del cliente
 - **Notas internas**: campo privado para el equipo, no lo ve el cliente
 - **Cambio de estado**: botones directos (Pendiente → En preparación → Listo → Enviado → Entregado)
+- **Eliminar pedido**: con confirmación; se borra también en Supabase
+
+#### Reportes (`/admin/reports`)
+- Ventas agrupadas **por día** (pedidos, unidades, ingresos)
+- Totales: hoy / últimos 7 días / últimos 30 días / histórico
+- Los pedidos cancelados no cuentan como venta
+- **Exportar a CSV** para llevar la contabilidad
 
 ---
 
@@ -258,10 +275,12 @@ git push -u origin main
 3. Región: **South America (São Paulo)** — la más cercana a Venezuela
 4. Contraseña de la base de datos: guardarla en un lugar seguro
 
-#### 2b. Ejecutar el schema SQL
+#### 2b. Ejecutar los schemas SQL
 1. Supabase Dashboard → **SQL Editor** → New query
-2. Copiar y pegar el contenido de `docs/supabase-schema.sql`
-3. Ejecutar (botón Run o Ctrl+Enter)
+2. Ejecutar `docs/supabase-schema.sql` (tabla `products` + Storage)
+3. Ejecutar `docs/supabase-orders-migration.sql` (tabla `orders` con número `KLS-XXXX` automático)
+4. Cargar el catálogo real: en tu máquina, `node scripts/seed-supabase.mjs`
+   (sube las 18 imágenes y los 18 productos)
 
 #### 2c. Crear bucket de imágenes
 1. Supabase Dashboard → **Storage** → New bucket
@@ -300,7 +319,8 @@ git push -u origin main
 | `VITE_ADMIN_PASSCODE` | `contraseña-segura-aqui` |
 | `VITE_DATA_SOURCE` | `supabase` |
 | `VITE_SUPABASE_URL` | `https://xxxxx.supabase.co` |
-| `VITE_SUPABASE_PUBLISHABLE_KEY` | `eyJ...` (la clave anon de Supabase) |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | `sb_publishable_...` (clave publishable/anon de Supabase) |
+| `VITE_GOOGLE_MAPS_API_KEY` | *(opcional)* token de Google Maps para autocompletar direcciones |
 
 5. Click **Deploy** → en 1-2 minutos la tienda estará en `https://kalos-vzla.vercel.app`
 

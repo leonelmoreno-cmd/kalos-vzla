@@ -5,6 +5,7 @@ import { CheckoutPage } from './pages/CheckoutPage';
 import { OrderSuccessPage } from './pages/OrderSuccessPage';
 import { AdminLayout } from './pages/admin/AdminLayout';
 import { AdminDashboardPage } from './pages/admin/AdminDashboardPage';
+import { AdminReportsPage } from './pages/admin/AdminReportsPage';
 import { ProductListPage } from './pages/admin/ProductListPage';
 import { ProductEditPage } from './pages/admin/ProductEditPage';
 import { OrderListPage } from './pages/admin/OrderListPage';
@@ -26,6 +27,7 @@ export default function App() {
         <Route path="products/new" element={<ProductEditPage />} />
         <Route path="products/:id" element={<ProductEditPage />} />
         <Route path="orders" element={<OrderListPage />} />
+        <Route path="reports" element={<AdminReportsPage />} />
       </Route>
 
       {/* Fallback */}

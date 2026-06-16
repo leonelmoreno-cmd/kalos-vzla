@@ -9,6 +9,8 @@ import { getOrderRepository } from '@/repositories/orderRepository';
 import { PAYMENT_METHODS, SHIPPING_METHODS } from '@/lib/constants';
 import { describeOptions, lineTotal } from '@/lib/cart';
 import { formatPrice } from '@/lib/format';
+import { hasGoogleMaps } from '@/lib/googleMaps';
+import { AddressAutocomplete, type PlaceResult } from '@/components/AddressAutocomplete';
 import { Field, TextInput, TextArea } from '@/components/ui/Input';
 import { RadioGroup } from '@/components/ui/RadioGroup';
 import { Button } from '@/components/ui/Button';
@@ -44,6 +46,9 @@ export function CheckoutPage() {
   // Fallback manual (Nominatim)
   const [manualLoading, setManualLoading] = useState(false);
   const [manualError, setManualError] = useState<string | null>(null);
+  // Si Google Maps no carga en runtime, caemos a Nominatim.
+  const [googleFailed, setGoogleFailed] = useState(false);
+  const useGoogle = hasGoogleMaps() && !googleFailed;
 
   // Envío del pedido
   const [submitting, setSubmitting] = useState(false);
@@ -99,7 +104,17 @@ export function CheckoutPage() {
     );
   };
 
-  // ── Fallback: calcular por dirección escrita ────────────────────────────
+  // ── Google Places: dirección elegida → precio exacto por coordenadas ────
+  const handlePlaceSelected = (place: PlaceResult) => {
+    const result = deliveryPriceFromCoords(place.lat, place.lng);
+    setGeoResult(result);
+    update('deliveryPrice', result.price);
+    update('address', place.formatted);
+    setManualError(null);
+    setGeoStatus('success');
+  };
+
+  // ── Fallback Nominatim: calcular por dirección escrita ──────────────────
   const handleManualCalc = async () => {
     if (!form.address?.trim()) return;
     setManualLoading(true);
@@ -292,7 +307,9 @@ export function CheckoutPage() {
                   }`}
                 >
                   <h3 className="mb-2 text-sm font-semibold text-gray-800">🏠 Mi dirección</h3>
-                  <p className="mb-3 text-xs text-gray-500">Escribe la dirección (propia o de alguien más)</p>
+                  <p className="mb-3 text-xs text-gray-500">
+                    Escribe la dirección (propia o de alguien más){useGoogle ? ' con autocompletado' : ''}
+                  </p>
                   <button
                     type="button"
                     onClick={() => setGeoStatus('manual')}
@@ -310,24 +327,43 @@ export function CheckoutPage() {
               {/* Campo de dirección manual */}
               {geoStatus === 'manual' && (
                 <div className="space-y-2 rounded-lg border border-bloom-200 bg-white p-3" data-error={!!manualError}>
-                  <Field label="Dirección en Maracaibo" required>
-                    <TextArea
-                      rows={2}
-                      value={form.address ?? ''}
-                      onChange={(e) => { update('address', e.target.value); setManualError(null); }}
-                      placeholder="Ej: Av. Las Delicias, Edif. Sol, piso 2, apto 2B"
-                    />
-                  </Field>
-                  <button
-                    type="button"
-                    onClick={handleManualCalc}
-                    disabled={manualLoading || !form.address?.trim()}
-                    className="inline-flex items-center gap-2 rounded-lg bg-bloom-700 px-4 py-2 text-sm font-semibold text-white disabled:opacity-40 hover:bg-bloom-800 transition"
-                  >
-                    {manualLoading
-                      ? <><span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />Calculando…</>
-                      : '🗺 Calcular precio'}
-                  </button>
+                  {useGoogle ? (
+                    // ── Google Places: autocompletado + cálculo instantáneo por coordenadas ──
+                    <Field
+                      label="Dirección de entrega"
+                      hint="Elige una sugerencia de la lista para calcular el delivery automáticamente."
+                    >
+                      <AddressAutocomplete
+                        value={form.address ?? ''}
+                        onChange={(v) => { update('address', v); setManualError(null); }}
+                        onSelect={handlePlaceSelected}
+                        onUnavailable={() => setGoogleFailed(true)}
+                        placeholder="Ej: Av. Las Delicias, Maracaibo"
+                      />
+                    </Field>
+                  ) : (
+                    // ── Fallback Nominatim (sin token de Google) ──
+                    <>
+                      <Field label="Dirección en Maracaibo">
+                        <TextArea
+                          rows={2}
+                          value={form.address ?? ''}
+                          onChange={(e) => { update('address', e.target.value); setManualError(null); }}
+                          placeholder="Ej: Av. Las Delicias, Edif. Sol, piso 2, apto 2B"
+                        />
+                      </Field>
+                      <button
+                        type="button"
+                        onClick={handleManualCalc}
+                        disabled={manualLoading || !form.address?.trim()}
+                        className="inline-flex items-center gap-2 rounded-lg bg-bloom-700 px-4 py-2 text-sm font-semibold text-white disabled:opacity-40 hover:bg-bloom-800 transition"
+                      >
+                        {manualLoading
+                          ? <><span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />Calculando…</>
+                          : '🗺 Calcular precio'}
+                      </button>
+                    </>
+                  )}
                   {manualError && <p className="text-xs text-red-500">{manualError}</p>}
                 </div>
               )}

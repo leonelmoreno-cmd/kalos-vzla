@@ -13,9 +13,7 @@ export function AdminLayout() {
       <header className="border-b border-bloom-100 bg-white">
         <div className="mx-auto flex max-w-4xl items-center justify-between px-4 py-3">
           <div className="flex items-center gap-2">
-            <span className="text-xl" aria-hidden>
-              🌸
-            </span>
+            <img src="/logo.png" alt="kalos.vzla" className="h-8 w-auto" />
             <span className="font-bold text-bloom-700">Administración</span>
           </div>
           <div className="flex items-center gap-3 text-sm">
@@ -41,6 +39,7 @@ export function AdminLayout() {
             { to: '/admin', label: 'Inicio', end: true },
             { to: '/admin/products', label: 'Productos', end: false },
             { to: '/admin/orders', label: 'Pedidos', end: false },
+            { to: '/admin/reports', label: 'Reportes', end: false },
           ].map(({ to, label, end }) => (
             <NavLink
               key={to}

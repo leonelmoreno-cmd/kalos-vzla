@@ -62,12 +62,17 @@ export function CatalogPage() {
         {/* Dos columnas: tagline | cómo pedir */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-stretch">
           {/* Tagline */}
-          <div className="flex flex-1 items-center justify-center rounded-2xl bg-bloom-700 px-6 py-5 text-center">
-            <p className="text-sm leading-relaxed text-white/90">
-              Hemos ayudado a más de 2000 personas a dar regalos inolvidables,
-              haciendo todo con amor y excelencia 💚{' '}
-              <span className="italic opacity-70">(1 Co 16:14)</span>
+          <div className="flex flex-1 flex-col items-center justify-center rounded-2xl bg-white px-6 py-7 text-center ring-1 ring-bloom-100">
+            <p className="text-2xl font-extrabold leading-tight text-bloom-800">
+              +2000 personas
             </p>
+            <p className="mt-1 text-base font-medium leading-snug text-gray-600">
+              ya nos confiaron sus regalos inolvidables
+            </p>
+            <p className="mt-3 text-sm text-gray-500">
+              Hacemos todo con amor y excelencia 💚
+            </p>
+            <p className="mt-1 text-xs italic text-gray-400">(1 Co 16:14)</p>
           </div>
 
           {/* Cómo pedir */}

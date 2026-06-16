@@ -41,13 +41,10 @@ export function Layout() {
             }}
             className="flex items-center gap-3 rounded-2xl bg-bloom-800 px-4 py-3 text-left text-white shadow-lg ring-1 ring-bloom-900/20 transition hover:bg-bloom-900 animate-[fadeInUp_0.25s_ease-out]"
           >
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-bloom-600 text-lg">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-bloom-600 text-base">
               ✓
             </span>
-            <span className="text-sm leading-tight">
-              <span className="block font-semibold">¡Agregado al carrito!</span>
-              <span className="block text-white/80">Toca aquí para ver tu carrito y finalizar →</span>
-            </span>
+            <span className="text-sm font-semibold">Agregado · Ver carrito →</span>
           </button>
         </div>
       )}
