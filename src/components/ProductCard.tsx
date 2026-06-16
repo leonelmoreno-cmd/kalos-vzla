@@ -30,7 +30,9 @@ export function ProductCard({ product, onSelect }: ProductCardProps) {
         <p className="mt-0.5 line-clamp-2 text-sm text-gray-500">{product.description}</p>
         <div className="mt-3 flex items-center justify-between">
           <span className="text-lg font-bold text-bloom-700">
-            {formatPrice(product.basePrice)}
+            {product.options && product.options.length > 0
+              ? `${product.options[0].choices.length} opciones`
+              : formatPrice(product.basePrice)}
           </span>
           <span className="flex items-center gap-1 rounded-full bg-bloom-100 px-3 py-1.5 text-xs font-semibold text-bloom-700 transition group-hover:bg-bloom-700 group-hover:text-white">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
