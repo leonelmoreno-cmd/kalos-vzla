@@ -26,8 +26,10 @@ export function Header({ onCartClick }: HeaderProps) {
         {/* Carrito */}
         <button
           onClick={onCartClick}
-          className={`relative flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold text-white transition ${
-            count > 0 ? 'bg-bloom-700 ring-2 ring-red-400 hover:bg-bloom-800' : 'bg-bloom-700 hover:bg-bloom-800'
+          className={`relative flex items-center gap-2 rounded-full px-5 py-2.5 font-semibold text-white transition-all ${
+            count > 0
+              ? 'animate-bounce bg-red-600 shadow-lg shadow-red-400/50 hover:bg-red-700 hover:shadow-red-400/70'
+              : 'bg-bloom-700 text-sm hover:bg-bloom-800'
           }`}
           aria-label="Abrir carrito"
         >
@@ -36,9 +38,11 @@ export function Header({ onCartClick }: HeaderProps) {
             <circle cx="9" cy="20" r="1.6" />
             <circle cx="18" cy="20" r="1.6" />
           </svg>
-          <span className="hidden sm:inline">{count > 0 ? 'Ir a pagar' : 'Carrito'}</span>
+          <span className={`hidden sm:inline ${count > 0 ? 'text-base font-bold' : 'text-sm'}`}>
+            {count > 0 ? 'Ir a pagar' : 'Carrito'}
+          </span>
           {count > 0 && (
-            <span className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 animate-pulse items-center justify-center rounded-full bg-red-600 px-1 text-xs font-bold text-white">
+            <span className="absolute -right-2 -top-2 flex h-6 min-w-6 items-center justify-center rounded-full bg-yellow-300 px-1.5 text-xs font-black text-red-700 shadow-md animate-bounce">
               {count}
             </span>
           )}
