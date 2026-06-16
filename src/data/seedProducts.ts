@@ -52,7 +52,7 @@ export const seedProducts: Product[] = [
     id: 'kit-01-billetera-reloj',
     name: 'Kit Papá — Opción 1',
     description:
-      'Caja de madera con reloj de pulso, billetera de cuero y surtido de chocolates americanos (Snickers, Almond Joy, M&M\'s, MilkyWay). Incluye tarjeta personalizada.',
+      'Caja de madera con reloj, billetera de cuero y surtido de chocolates americanos (Snickers, Almond Joy, M&M\'s, MilkyWay). Incluye tarjeta personalizada.',
     basePrice: 25,
     imageUrl: '/products/kit-01-billetera-reloj.png',
     available: true,
@@ -63,7 +63,7 @@ export const seedProducts: Product[] = [
     id: 'kit-02-billetera-mms',
     name: 'Kit Papá — Opción 2',
     description:
-      'Caja de madera con reloj de pulso dorado, billetera texturizada y selección de chocolates (MilkyWay, M&M\'s, Almond Joy). Incluye tarjeta personalizada.',
+      'Caja de madera con reloj dorado, billetera texturizada y selección de chocolates (MilkyWay, M&M\'s, Almond Joy). Incluye tarjeta personalizada.',
     basePrice: 28,
     imageUrl: '/products/kit-02-billetera-mms.png',
     available: true,
@@ -74,7 +74,7 @@ export const seedProducts: Product[] = [
     id: 'kit-03-ejecutivo',
     name: 'Kit Papá — Opción 3',
     description:
-      'Caja de madera con correa de cuero, reloj de pulso, billetera y chocolates (Snickers, Hershey\'s, MilkyWay). Incluye tarjeta personalizada.',
+      'Caja de madera con correa de cuero, reloj, billetera y chocolates (Snickers, Hershey\'s, MilkyWay). Incluye tarjeta personalizada.',
     basePrice: 34,
     imageUrl: '/products/kit-03-ejecutivo.png',
     available: true,
@@ -204,7 +204,7 @@ export const seedProducts: Product[] = [
     id: 'arreglo-13-papa-reloj',
     name: 'Arreglo Papá con Reloj — Opción 13',
     description:
-      'Arreglo PAPÁ con reloj de pulso, Ferrero Rocher, chocolates (Snickers, M&M\'s) y globo estrella dorado "Feliz Día", en caja cilíndrica.',
+      'Arreglo PAPÁ con reloj, Ferrero Rocher, chocolates (Snickers, M&M\'s) y globo estrella dorado "Feliz Día", en caja cilíndrica.',
     basePrice: 28,
     imageUrl: '/products/arreglo-13-papa-reloj.png',
     available: true,
