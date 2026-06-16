@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import type { Product, ProductOption } from '@/types';
 import { getProductRepository, type ProductInput } from '@/repositories/productRepository';
 import { supabase } from '@/lib/supabaseClient';
+import { findDuplicateLabels } from '@/lib/normalize';
 import { Field, TextInput, TextArea } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 
@@ -34,6 +35,14 @@ export function ProductEditPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [imageLoading, setImageLoading] = useState(false);
+
+  // Detecta etiquetas duplicadas (con typos, espacios, mayúsculas diferentes)
+  const duplicateLabels = useMemo(() => {
+    const options = draft.options ?? [];
+    const optionLabels = options.map(o => o.label).filter(l => l.trim());
+    const choiceLabels = options.flatMap(o => o.choices.map(c => c.label)).filter(l => l.trim());
+    return [...findDuplicateLabels(optionLabels), ...findDuplicateLabels(choiceLabels)];
+  }, [draft.options]);
 
   useEffect(() => {
     if (isNew) return;
@@ -308,6 +317,14 @@ export function ProductEditPage() {
 
         {/* ── Variantes / Opciones ── */}
         <div className="card space-y-4 p-4">
+          {duplicateLabels.length > 0 && (
+            <div className="rounded-lg bg-yellow-50 p-3 text-sm text-yellow-800 ring-1 ring-yellow-200">
+              ⚠️ Etiquetas duplicadas detectadas: <strong>{duplicateLabels.join(', ')}</strong>
+              <p className="mt-1 text-xs text-yellow-700">
+                Revisa si hay typos (espacios extra, mayúsculas diferentes). Consolida estas opciones para evitar confusión.
+              </p>
+            </div>
+          )}
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-semibold text-gray-700">Variantes</p>

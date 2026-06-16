@@ -536,6 +536,7 @@ export function CheckoutPage() {
                   {PAYMENT_DETAILS[form.payment]}
                 </div>
               )}
+              {form.payment !== 'pago_movil' && (
               <div data-error={!!errors.receiptUrl}>
                 <p className="mb-2 text-sm font-medium text-gray-700">
                   Comprobante de pago <span className="text-bloom-600">*</span>
@@ -580,6 +581,7 @@ export function CheckoutPage() {
                   <p className="mt-1 text-xs font-medium text-red-500">{errors.receiptUrl}</p>
                 )}
               </div>
+              )}
             </div>
           )}
         </section>

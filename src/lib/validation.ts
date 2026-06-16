@@ -64,7 +64,8 @@ export function validateCheckout(form: CheckoutForm): Partial<Record<keyof Check
 
   if (!form.payment) errors.payment = 'Selecciona un método de pago.';
 
-  if (form.payment && form.payment !== 'cash' && !form.receiptUrl) {
+  // Comprobante requerido para pagos electrónicos (no para pago móvil ni cash)
+  if (form.payment && form.payment !== 'cash' && form.payment !== 'pago_movil' && !form.receiptUrl) {
     errors.receiptUrl = 'Adjunta tu comprobante de pago para finalizar el pedido.';
   }
 
