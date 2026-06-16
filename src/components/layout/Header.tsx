@@ -28,7 +28,7 @@ export function Header({ onCartClick }: HeaderProps) {
           onClick={onCartClick}
           className={`relative flex items-center gap-2 rounded-full px-5 py-2.5 font-semibold text-white transition-all ${
             count > 0
-              ? 'animate-bounce bg-red-600 shadow-lg shadow-red-400/50 hover:bg-red-700 hover:shadow-red-400/70'
+              ? 'bg-bloom-600 shadow-lg shadow-bloom-400/50 hover:bg-bloom-700 hover:shadow-bloom-400/70'
               : 'bg-bloom-700 text-sm hover:bg-bloom-800'
           }`}
           aria-label="Abrir carrito"
@@ -42,7 +42,7 @@ export function Header({ onCartClick }: HeaderProps) {
             {count > 0 ? 'Ir a pagar' : 'Carrito'}
           </span>
           {count > 0 && (
-            <span className="absolute -right-2 -top-2 flex h-6 min-w-6 items-center justify-center rounded-full bg-yellow-300 px-1.5 text-xs font-black text-red-700 shadow-md animate-bounce">
+            <span className="absolute -right-2 -top-2 flex h-7 min-w-7 items-center justify-center rounded-full bg-red-600 px-1.5 text-xs font-black text-white shadow-md animate-pulse">
               {count}
             </span>
           )}
