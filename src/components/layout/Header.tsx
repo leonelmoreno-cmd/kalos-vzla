@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useCart } from '@/context/CartContext';
 
 interface HeaderProps {
@@ -7,6 +7,11 @@ interface HeaderProps {
 
 export function Header({ onCartClick }: HeaderProps) {
   const { count } = useCart();
+  const { pathname } = useLocation();
+  // El parpadeo es un recordatorio para "ir a pagar". Cuando el cliente ya
+  // está completando el pedido (checkout) el recordatorio ya cumplió su
+  // función, así que el contador se queda fijo para no distraer.
+  const isCompletingOrder = pathname.startsWith('/checkout');
   return (
     <header className="sticky top-0 z-30 border-b border-bloom-100 bg-white/95 backdrop-blur">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
@@ -42,7 +47,7 @@ export function Header({ onCartClick }: HeaderProps) {
             {count > 0 ? 'Ir a pagar' : 'Carrito'}
           </span>
           {count > 0 && (
-            <span className="absolute -right-2 -top-2 flex h-7 min-w-7 items-center justify-center rounded-full bg-red-600 px-1.5 text-xs font-black text-white shadow-md animate-blink">
+            <span className={`absolute -right-2 -top-2 flex h-7 min-w-7 items-center justify-center rounded-full bg-red-600 px-1.5 text-xs font-black text-white shadow-md ${isCompletingOrder ? '' : 'animate-blink'}`}>
               {count}
             </span>
           )}

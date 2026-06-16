@@ -11,6 +11,7 @@ import { describeOptions, lineTotal } from '@/lib/cart';
 import { formatPrice } from '@/lib/format';
 import { hasGoogleMaps } from '@/lib/googleMaps';
 import { supabase } from '@/lib/supabaseClient';
+import { receiptPath } from '@/lib/receipt';
 import { AddressAutocomplete, type PlaceResult } from '@/components/AddressAutocomplete';
 import { Field, TextInput, TextArea } from '@/components/ui/Input';
 import { RadioGroup } from '@/components/ui/RadioGroup';
@@ -153,14 +154,19 @@ export function CheckoutPage() {
     setReceiptUploading(true);
     setReceiptError(null);
     try {
-      const fileName = `receipts/${Date.now()}-${file.name}`;
-      const { error: uploadError } = await supabase.storage.from('products').upload(fileName, file, { upsert: true });
+      const path = receiptPath(file.name);
+      const { error: uploadError } = await supabase.storage
+        .from('products')
+        .upload(path, file, { upsert: true, contentType: file.type || undefined });
       if (uploadError) throw uploadError;
-      const { data } = supabase.storage.from('products').getPublicUrl(fileName);
+      const { data } = supabase.storage.from('products').getPublicUrl(path);
       update('receiptUrl', data.publicUrl);
       setReceiptName(file.name);
     } catch (e) {
-      setReceiptError(e instanceof Error ? e.message : 'No se pudo subir el comprobante.');
+      setReceiptError(
+        'No se pudo subir el comprobante. Puedes adjuntarlo directamente en WhatsApp al finalizar.',
+      );
+      console.error('Error al subir el comprobante:', e);
     } finally {
       setReceiptUploading(false);
     }
