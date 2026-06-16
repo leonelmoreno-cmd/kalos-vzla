@@ -12,6 +12,7 @@ import { formatPrice } from '@/lib/format';
 import { hasGoogleMaps } from '@/lib/googleMaps';
 import { supabase } from '@/lib/supabaseClient';
 import { receiptPath } from '@/lib/receipt';
+import { normalizePhone } from '@/lib/phone';
 import { AddressAutocomplete, type PlaceResult } from '@/components/AddressAutocomplete';
 import { Field, TextInput, TextArea } from '@/components/ui/Input';
 import { RadioGroup } from '@/components/ui/RadioGroup';
@@ -263,7 +264,7 @@ export function CheckoutPage() {
               <TextInput
                 value={form.phone}
                 hasError={!!errors.phone}
-                onChange={(e) => update('phone', e.target.value)}
+                onChange={(e) => update('phone', normalizePhone(e.target.value))}
                 placeholder="+58 424 4707676"
                 inputMode="tel"
                 autoComplete="tel"
