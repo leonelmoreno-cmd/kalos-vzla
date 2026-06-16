@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useCart } from '@/context/CartContext';
 import { describeOptions, lineTotal } from '@/lib/cart';
 import { formatPrice } from '@/lib/format';
-import { ProductImage } from './ProductImage';
+import { ZoomableProductImage } from './ZoomableProductImage';
 import { QuantityStepper } from './ui/QuantityStepper';
 import { Button } from './ui/Button';
 
@@ -71,7 +71,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
                 const opts = describeOptions(item);
                 return (
                   <div key={item.id} className="card flex gap-3 p-3">
-                    <ProductImage
+                    <ZoomableProductImage
                       src={item.product.imageUrl}
                       alt={item.product.name}
                       className="h-20 w-20 flex-shrink-0 rounded-xl"

@@ -1,6 +1,6 @@
 import type { Product } from '@/types';
 import { formatPrice } from '@/lib/format';
-import { ProductImage } from './ProductImage';
+import { ZoomableProductImage } from './ZoomableProductImage';
 
 interface ProductCardProps {
   product: Product;
@@ -14,10 +14,10 @@ export function ProductCard({ product, onSelect }: ProductCardProps) {
       className="card group flex flex-col overflow-hidden text-left transition hover:-translate-y-0.5 hover:shadow-md"
     >
       <div className="relative">
-        <ProductImage
+        <ZoomableProductImage
           src={product.imageUrl}
           alt={product.name}
-          className="aspect-square w-full transition group-hover:scale-[1.03]"
+          className="aspect-square w-full"
         />
         {product.category && (
           <span className="absolute left-2 top-2 rounded-full bg-white/90 px-2.5 py-1 text-xs font-medium text-bloom-700 shadow-sm">

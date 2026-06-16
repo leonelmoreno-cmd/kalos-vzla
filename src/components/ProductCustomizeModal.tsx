@@ -7,7 +7,7 @@ import { Modal } from './ui/Modal';
 import { Button } from './ui/Button';
 import { TextArea } from './ui/Input';
 import { QuantityStepper } from './ui/QuantityStepper';
-import { ProductImage } from './ProductImage';
+import { ZoomableProductImage } from './ZoomableProductImage';
 
 interface ProductCustomizeModalProps {
   product: Product | null;
@@ -72,7 +72,7 @@ export function ProductCustomizeModal({ product, onClose }: ProductCustomizeModa
       }
     >
       <div className="mb-4 flex max-h-80 items-center justify-center overflow-hidden rounded-2xl bg-bloom-50">
-        <ProductImage
+        <ZoomableProductImage
           src={product.imageUrl}
           alt={product.name}
           fit="contain"
