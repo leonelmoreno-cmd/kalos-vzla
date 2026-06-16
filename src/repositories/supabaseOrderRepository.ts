@@ -55,6 +55,7 @@ export class SupabaseOrderRepository implements OrderRepository {
         total,
         items,
         form,
+        receipt_url: form.receiptUrl ?? null,
         customer_notes: form.notes ?? null,
       })
       .select('*')
