@@ -21,11 +21,22 @@ export const WA_CONTACT_URL =
   'https://api.whatsapp.com/send/?phone=584246263545&text&type=phone_number&app_absent=0&utm_source=ig';
 
 /** Métodos de entrega */
-export const SHIPPING_METHODS: { value: ShippingMethod; label: string; hint: string }[] = [
-  { value: 'delivery', label: 'Delivery', hint: 'A domicilio en Maracaibo' },
-  { value: 'pickup', label: 'Retiro en tienda', hint: 'Av. Padilla, frente al CC Ciudad Chinita' },
-  { value: 'national_mrw', label: 'Envío Nacional MRW', hint: 'Envío a cualquier ciudad de Venezuela' },
+export const SHIPPING_METHODS: { value: ShippingMethod; label: string; hint: string; eta: string }[] = [
+  { value: 'delivery', label: 'Delivery', hint: 'A domicilio en Maracaibo', eta: 'Llega el mismo día' },
+  { value: 'pickup', label: 'Retiro en tienda', hint: 'Av. Padilla, frente al CC Ciudad Chinita', eta: 'Disponible para retirar el mismo día' },
+  { value: 'national_mrw', label: 'Envío Nacional MRW', hint: 'Envío a cualquier ciudad de Venezuela', eta: 'Llega en 2-3 días hábiles' },
 ];
+
+/** Datos de pago a mostrar al cliente al elegir cada método (completar antes de publicar). */
+export const PAYMENT_DETAILS: Record<PaymentMethod, string | null> = {
+  cash: null,
+  binance_pay: '[Completar: ID de Binance Pay de kalos.vzla]',
+  zelle: '[Completar: correo y nombre titular de la cuenta Zelle]',
+  zinli: '[Completar: datos de la cuenta Zinli]',
+  pos: null,
+  atc: '[Completar: datos para transferencia ATC]',
+  pago_movil: '[Completar: banco, cédula y teléfono de Pago Móvil]',
+};
 
 /** Métodos de pago */
 export const PAYMENT_METHODS: { value: PaymentMethod; label: string; hint?: string }[] = [

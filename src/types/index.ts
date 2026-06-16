@@ -84,6 +84,8 @@ export interface CheckoutForm {
   /** Solo para envío nacional MRW. */
   mrw?: MrwData;
   payment: PaymentMethod;
+  /** URL pública del comprobante de pago subido (Supabase Storage). */
+  receiptUrl?: string;
   notes?: string;
 }
 

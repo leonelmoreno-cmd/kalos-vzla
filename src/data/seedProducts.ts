@@ -25,7 +25,26 @@ const CAT = {
   especiales: 'Regalos Especiales',
   arreglos: 'Arreglos con Regalos',
   cuadros: 'Cuadros',
+  corporativos: 'Corporativos',
 } as const;
+
+// ─── Opción de cantidad para regalos corporativos ────────────────────────────
+// El precio unitario es basePrice; cada tier de cantidad fija el precio total
+// (delta = precio del tier − basePrice), por lo que unitPrice × 1 = precio del tier.
+function cantidadOptions(unidad: number, docena: number, cincuenta: number, cien: number) {
+  return [
+    {
+      id: 'cantidad',
+      label: 'Cantidad',
+      choices: [
+        { id: 'unidad', label: 'Unidad', priceDelta: 0 },
+        { id: 'docena', label: 'Docena (12 uds)', priceDelta: docena - unidad },
+        { id: 'cincuenta', label: '50 unidades', priceDelta: cincuenta - unidad },
+        { id: 'cien', label: '100 unidades', priceDelta: cien - unidad },
+      ],
+    },
+  ];
+}
 
 export const seedProducts: Product[] = [
   // ── PARTE 1: KITS DE REGALOS ───────────────────────────────────────────────
@@ -33,7 +52,7 @@ export const seedProducts: Product[] = [
     id: 'kit-01-billetera-reloj',
     name: 'Kit Papá — Opción 1',
     description:
-      'Caja de madera con reloj Casio, billetera de cuero y surtido de chocolates americanos (Snickers, Almond Joy, M&M\'s, MilkyWay). Incluye tarjeta personalizada.',
+      'Caja de madera con reloj de pulso, billetera de cuero y surtido de chocolates americanos (Snickers, Almond Joy, M&M\'s, MilkyWay). Incluye tarjeta personalizada.',
     basePrice: 25,
     imageUrl: '/products/kit-01-billetera-reloj.png',
     available: true,
@@ -44,7 +63,7 @@ export const seedProducts: Product[] = [
     id: 'kit-02-billetera-mms',
     name: 'Kit Papá — Opción 2',
     description:
-      'Caja de madera con reloj Casio dorado, billetera texturizada y selección de chocolates (MilkyWay, M&M\'s, Almond Joy). Incluye tarjeta personalizada.',
+      'Caja de madera con reloj de pulso dorado, billetera texturizada y selección de chocolates (MilkyWay, M&M\'s, Almond Joy). Incluye tarjeta personalizada.',
     basePrice: 28,
     imageUrl: '/products/kit-02-billetera-mms.png',
     available: true,
@@ -55,7 +74,7 @@ export const seedProducts: Product[] = [
     id: 'kit-03-ejecutivo',
     name: 'Kit Papá — Opción 3',
     description:
-      'Caja de madera con correa de cuero, reloj Casio, billetera y chocolates (Snickers, Hershey\'s, MilkyWay). Incluye tarjeta personalizada.',
+      'Caja de madera con correa de cuero, reloj de pulso, billetera y chocolates (Snickers, Hershey\'s, MilkyWay). Incluye tarjeta personalizada.',
     basePrice: 34,
     imageUrl: '/products/kit-03-ejecutivo.png',
     available: true,
@@ -89,15 +108,27 @@ export const seedProducts: Product[] = [
   },
   {
     id: 'regalo-06-album-panini',
-    name: 'Álbum Panini Nuestro Héroe — Opción 6',
+    name: 'Álbum FIFA 2026 versión PAPÁ',
     description:
-      'Álbum Panini personalizado "Nuestro Héroe #1 Papá" con cromos de fotos familiares y chocolates. Una colección única del mejor papá.',
+      'Álbum personalizado "Nuestro Héroe #1 Papá" con cromos de fotos familiares. Incluye su caja de regalo más dos chocolates ✨💙',
+    note: 'La personalización incluye SOLO FOTOS💙 (no podemos modificar los textos) 💙',
     basePrice: 17,
     imageUrl: '/products/regalo-06-album-panini.png',
     available: true,
     category: CAT.especiales,
     requiresPhotos: true,
     allowCardMessage: true,
+    options: [
+      {
+        id: 'tamano',
+        label: 'Elige tu opción',
+        choices: [
+          { id: 'opcion-1', label: 'Opción #1 — 12 barajitas y 12 espacios', priceDelta: 0 },
+          { id: 'opcion-2', label: 'Opción #2 — 26 barajitas y 26 espacios', priceDelta: 13 },
+          { id: 'opcion-3', label: 'Opción #3 — 40 barajitas y 40 espacios', priceDelta: 23 },
+        ],
+      },
+    ],
   },
   {
     id: 'regalo-07-cuadro-cromo',
@@ -173,7 +204,7 @@ export const seedProducts: Product[] = [
     id: 'arreglo-13-papa-reloj',
     name: 'Arreglo Papá con Reloj — Opción 13',
     description:
-      'Arreglo PAPÁ con reloj Casio, Ferrero Rocher, chocolates (Snickers, M&M\'s) y globo estrella dorado "Feliz Día", en caja cilíndrica.',
+      'Arreglo PAPÁ con reloj de pulso, Ferrero Rocher, chocolates (Snickers, M&M\'s) y globo estrella dorado "Feliz Día", en caja cilíndrica.',
     basePrice: 28,
     imageUrl: '/products/arreglo-13-papa-reloj.png',
     available: true,
@@ -240,5 +271,129 @@ export const seedProducts: Product[] = [
     category: CAT.cuadros,
     requiresPhotos: true,
     allowCardMessage: true,
+  },
+
+  // ── REGALOS CORPORATIVOS — Día del Padre 2026 ──────────────────────────────
+  // Personalización con logo de empresa sin costo adicional a partir de 24 uds.
+  {
+    id: 'corp-llaveros-fifa',
+    name: 'Tag + Llaveros FIFA',
+    description: 'Llavero FIFA World Cup 26 con tag personalizable "¡Hoy te deseamos un feliz día, Papá!". Ideal para detalles corporativos del Día del Padre.',
+    note: 'Personaliza con el logo de tu empresa sin costo adicional a partir de 24 unidades.',
+    basePrice: 3.7,
+    imageUrl: '/products/corp-llaveros-fifa.png',
+    available: true,
+    category: CAT.corporativos,
+    options: cantidadOptions(3.7, 45, 185, 370),
+  },
+  {
+    id: 'corp-perfume',
+    name: 'Tag + Perfume',
+    description: 'Perfume 2i2 VIP Men con tag personalizable "¡Hoy te deseamos un feliz día, Papá!". Detalle corporativo elegante para el Día del Padre.',
+    note: 'Personaliza con el logo de tu empresa sin costo adicional a partir de 24 unidades.',
+    basePrice: 3.0,
+    imageUrl: '/products/corp-perfume.png',
+    available: true,
+    category: CAT.corporativos,
+    options: cantidadOptions(3.0, 36, 150, 300),
+  },
+  {
+    id: 'corp-medias',
+    name: 'Tag + Medias',
+    description: 'Par de medias con banda "Papá, te deseamos un feliz día" y tag personalizable. Detalle práctico y cómodo para el equipo.',
+    note: 'Personaliza con el logo de tu empresa sin costo adicional a partir de 24 unidades.',
+    basePrice: 1.65,
+    imageUrl: '/products/corp-medias.png',
+    available: true,
+    category: CAT.corporativos,
+    options: cantidadOptions(1.65, 20, 83, 165),
+  },
+  {
+    id: 'corp-boligrafo',
+    name: 'Tag + Bolígrafo',
+    description: 'Bolígrafo con tag personalizable "¡Hoy te deseamos un feliz día, Papá!". Económico y útil para entregas masivas.',
+    note: 'Personaliza con el logo de tu empresa sin costo adicional a partir de 24 unidades.',
+    basePrice: 1.5,
+    imageUrl: '/products/corp-boligrafo.png',
+    available: true,
+    category: CAT.corporativos,
+    options: cantidadOptions(1.5, 18, 75, 150),
+  },
+  {
+    id: 'corp-chocolate',
+    name: 'Tag + 1 Chocolate',
+    description: 'Chocolate individual (Twix o Hershey\'s) con tag personalizable "¡Hoy te deseamos un feliz día, Papá!". El detalle corporativo más económico.',
+    note: 'Personaliza con el logo de tu empresa sin costo adicional a partir de 24 unidades.',
+    basePrice: 1.3,
+    imageUrl: '/products/corp-chocolate.png',
+    available: true,
+    category: CAT.corporativos,
+    options: cantidadOptions(1.3, 15, 63, 126),
+  },
+  {
+    id: 'corp-kit-chocolates',
+    name: 'Kit de Chocolates',
+    description: 'Bolsa con surtido de chocolates (M&M\'s, MilkyWay, Reese\'s) y tag "Papá, te deseamos un feliz día" con moño azul. Presentación lista para regalar.',
+    note: 'Personaliza con el logo de tu empresa sin costo adicional a partir de 24 unidades.',
+    basePrice: 3.0,
+    imageUrl: '/products/corp-kit-chocolates.png',
+    available: true,
+    category: CAT.corporativos,
+    options: cantidadOptions(3.0, 36, 149, 297),
+  },
+  {
+    id: 'corp-cesta-mani',
+    name: 'Cesta de Maní',
+    description: 'Cestica individual de maní salado con etiqueta "Papá, te deseamos un feliz día". Detalle sencillo y delicioso para el equipo.',
+    note: 'Personaliza con el logo de tu empresa sin costo adicional a partir de 24 unidades.',
+    basePrice: 2.0,
+    imageUrl: '/products/corp-cesta-mani.png',
+    available: true,
+    category: CAT.corporativos,
+    options: cantidadOptions(2.0, 24, 100, 200),
+  },
+  {
+    id: 'corp-ferreros',
+    name: 'Tag + Ferreros',
+    description: 'Ferrero Rocher individual con tag personalizable "¡Hoy te deseamos un feliz día, Papá!". Clásico y siempre bien recibido.',
+    note: 'Personaliza con el logo de tu empresa sin costo adicional a partir de 24 unidades.',
+    basePrice: 1.85,
+    imageUrl: '/products/corp-ferreros.png',
+    available: true,
+    category: CAT.corporativos,
+    options: cantidadOptions(1.85, 22, 92, 184),
+  },
+  {
+    id: 'corp-moneda-chocolate',
+    name: 'Tag + Moneda de Chocolate',
+    description: 'Moneda de chocolate dorada con tag personalizable "¡Hoy te deseamos un feliz día, Papá!". El detalle corporativo más accesible.',
+    note: 'Personaliza con el logo de tu empresa sin costo adicional a partir de 24 unidades.',
+    basePrice: 0.85,
+    imageUrl: '/products/corp-moneda-chocolate.png',
+    available: true,
+    category: CAT.corporativos,
+    options: cantidadOptions(0.85, 10, 41, 82),
+  },
+  {
+    id: 'corp-llavero-impreso',
+    name: 'Tag + Llavero Impreso',
+    description: 'Llavero acrílico impreso "Eres el mejor padre de la galaxia" con tag personalizable. Personalización del llavero incluida sin costo.',
+    note: 'Personaliza con el logo de tu empresa sin costo adicional a partir de 24 unidades.',
+    basePrice: 1.75,
+    imageUrl: '/products/corp-llavero-impreso.png',
+    available: true,
+    category: CAT.corporativos,
+    options: cantidadOptions(1.75, 21, 88, 175),
+  },
+  {
+    id: 'corp-llavero-rotulado',
+    name: 'Tag + Llavero Rotulado',
+    description: 'Llavero acrílico "Feliz Día Papá" con tag personalizable. Personalización del llavero incluida sin costo.',
+    note: 'Personaliza con el logo de tu empresa sin costo adicional a partir de 24 unidades.',
+    basePrice: 3.6,
+    imageUrl: '/products/corp-llavero-rotulado.png',
+    available: true,
+    category: CAT.corporativos,
+    options: cantidadOptions(3.6, 43, 179, 357),
   },
 ];

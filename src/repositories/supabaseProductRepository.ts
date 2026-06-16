@@ -36,6 +36,8 @@ function fromRow(row: any): Product {
     category: row.category ?? undefined,
     options: options ?? undefined,
     allowCardMessage: !!row.allow_card_message,
+    requiresPhotos: !!row.requires_photos,
+    note: row.note ?? undefined,
   };
 }
 
@@ -49,6 +51,8 @@ function toRow(input: Partial<ProductInput>): Record<string, unknown> {
   if (input.category !== undefined) row.category = input.category;
   if (input.options !== undefined) row.options = input.options;
   if (input.allowCardMessage !== undefined) row.allow_card_message = input.allowCardMessage;
+  if (input.requiresPhotos !== undefined) row.requires_photos = input.requiresPhotos;
+  if (input.note !== undefined) row.note = input.note;
   return row;
 }
 

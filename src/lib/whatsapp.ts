@@ -55,6 +55,9 @@ export function buildOrderMessage(
   }
   lines.push(`Total del pedido: ${formatPrice(total)}`);
   lines.push(`Método de pago: ${paymentLabel(form.payment)}`);
+  if (form.receiptUrl) {
+    lines.push(`Comprobante: ${form.receiptUrl}`);
+  }
   lines.push('');
 
   // ── Datos del cliente ────────────────────────────────────────────────────

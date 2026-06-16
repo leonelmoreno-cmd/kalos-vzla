@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import type { CheckoutForm, MrwData, PaymentMethod, ShippingMethod } from '@/types';
 import { useCart } from '@/context/CartContext';
@@ -6,10 +6,11 @@ import { validateCheckout, validateMrw } from '@/lib/validation';
 import { buildOrderMessage, buildWhatsAppUrl } from '@/lib/whatsapp';
 import { deliveryPriceFromCoords, calculateDeliveryPrice } from '@/lib/delivery';
 import { getOrderRepository } from '@/repositories/orderRepository';
-import { PAYMENT_METHODS, SHIPPING_METHODS } from '@/lib/constants';
+import { PAYMENT_DETAILS, PAYMENT_METHODS, SHIPPING_METHODS } from '@/lib/constants';
 import { describeOptions, lineTotal } from '@/lib/cart';
 import { formatPrice } from '@/lib/format';
 import { hasGoogleMaps } from '@/lib/googleMaps';
+import { supabase } from '@/lib/supabaseClient';
 import { AddressAutocomplete, type PlaceResult } from '@/components/AddressAutocomplete';
 import { Field, TextInput, TextArea } from '@/components/ui/Input';
 import { RadioGroup } from '@/components/ui/RadioGroup';
@@ -53,6 +54,12 @@ export function CheckoutPage() {
   // Envío del pedido
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+
+  // Comprobante de pago
+  const [receiptUploading, setReceiptUploading] = useState(false);
+  const [receiptError, setReceiptError] = useState<string | null>(null);
+  const [receiptName, setReceiptName] = useState<string | null>(null);
+  const receiptInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -131,6 +138,37 @@ export function CheckoutPage() {
     } finally {
       setManualLoading(false);
     }
+  };
+
+  // ── Comprobante de pago ──────────────────────────────────────────────────
+  const handleReceiptFile = async (file: File) => {
+    if (!file.type.startsWith('image/') && file.type !== 'application/pdf') {
+      setReceiptError('Sube una imagen o PDF del comprobante.');
+      return;
+    }
+    if (!supabase) {
+      setReceiptError('La carga de comprobantes no está disponible en este momento. Adjúntalo directamente en WhatsApp.');
+      return;
+    }
+    setReceiptUploading(true);
+    setReceiptError(null);
+    try {
+      const fileName = `receipts/${Date.now()}-${file.name}`;
+      const { error: uploadError } = await supabase.storage.from('products').upload(fileName, file, { upsert: true });
+      if (uploadError) throw uploadError;
+      const { data } = supabase.storage.from('products').getPublicUrl(fileName);
+      update('receiptUrl', data.publicUrl);
+      setReceiptName(file.name);
+    } catch (e) {
+      setReceiptError(e instanceof Error ? e.message : 'No se pudo subir el comprobante.');
+    } finally {
+      setReceiptUploading(false);
+    }
+  };
+
+  const handleReceiptInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) void handleReceiptFile(file);
   };
 
   if (items.length === 0) {
@@ -242,6 +280,12 @@ export function CheckoutPage() {
           />
           {errors.shipping && (
             <p className="text-xs font-medium text-red-500">{errors.shipping}</p>
+          )}
+          {form.shipping && (
+            <p className="flex items-center gap-1.5 text-xs font-medium text-bloom-700">
+              <span aria-hidden>🗓️</span>
+              {SHIPPING_METHODS.find((m) => m.value === form.shipping)?.eta}
+            </p>
           )}
 
           {/* ── Delivery: opción GPS o dirección manual ── */}
@@ -406,6 +450,9 @@ export function CheckoutPage() {
               <div className="rounded-lg bg-bloom-100 px-3 py-2 text-sm font-medium text-bloom-800">
                 📦 El envío se cobra en destino (cobro en destino MRW)
               </div>
+              <div className="rounded-lg bg-amber-50 px-3 py-2 text-xs font-medium text-amber-700 ring-1 ring-amber-200">
+                ⚠️ Para envíos nacionales la caja de regalo se envía desarmada.
+              </div>
               <p className="text-xs text-gray-500">
                 Por favor déjanos estos datos para procesar tu envío:
               </p>
@@ -469,6 +516,64 @@ export function CheckoutPage() {
           />
           {errors.payment && (
             <p className="text-xs font-medium text-red-500">{errors.payment}</p>
+          )}
+
+          {/* ── Datos de pago + carga de comprobante ── */}
+          {form.payment && form.payment !== 'cash' && (
+            <div className="space-y-3 rounded-xl bg-bloom-50 p-4">
+              {PAYMENT_DETAILS[form.payment] && (
+                <div className="rounded-lg bg-white p-3 text-sm text-gray-700 ring-1 ring-bloom-200">
+                  <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-gray-400">
+                    Datos para tu pago
+                  </p>
+                  {PAYMENT_DETAILS[form.payment]}
+                </div>
+              )}
+              <div data-error={!!errors.receiptUrl}>
+                <p className="mb-2 text-sm font-medium text-gray-700">
+                  Comprobante de pago <span className="text-bloom-600">*</span>
+                </p>
+                <input
+                  ref={receiptInputRef}
+                  type="file"
+                  accept="image/*,application/pdf"
+                  className="hidden"
+                  onChange={handleReceiptInput}
+                />
+                {form.receiptUrl ? (
+                  <div className="flex items-center justify-between rounded-lg bg-white p-3 ring-1 ring-bloom-200">
+                    <span className="truncate text-sm text-gray-700">✅ {receiptName ?? 'Comprobante cargado'}</span>
+                    <button
+                      type="button"
+                      onClick={() => receiptInputRef.current?.click()}
+                      className="text-xs font-semibold text-bloom-700 hover:underline"
+                    >
+                      Cambiar
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => receiptInputRef.current?.click()}
+                    disabled={receiptUploading}
+                    className="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-dashed border-bloom-300 bg-white px-3 py-3 text-sm font-semibold text-bloom-700 transition hover:border-bloom-500 disabled:opacity-50"
+                  >
+                    {receiptUploading ? (
+                      <>
+                        <span className="h-4 w-4 animate-spin rounded-full border-2 border-bloom-600 border-t-transparent" />
+                        Subiendo…
+                      </>
+                    ) : (
+                      '📎 Cargar comprobante'
+                    )}
+                  </button>
+                )}
+                {receiptError && <p className="mt-1 text-xs text-red-500">{receiptError}</p>}
+                {errors.receiptUrl && (
+                  <p className="mt-1 text-xs font-medium text-red-500">{errors.receiptUrl}</p>
+                )}
+              </div>
+            </div>
           )}
         </section>
 

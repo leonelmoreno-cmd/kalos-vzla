@@ -26,7 +26,9 @@ export function Header({ onCartClick }: HeaderProps) {
         {/* Carrito */}
         <button
           onClick={onCartClick}
-          className="relative flex items-center gap-2 rounded-full bg-bloom-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-bloom-800"
+          className={`relative flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold text-white transition ${
+            count > 0 ? 'bg-bloom-700 ring-2 ring-red-400 hover:bg-bloom-800' : 'bg-bloom-700 hover:bg-bloom-800'
+          }`}
           aria-label="Abrir carrito"
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -34,9 +36,9 @@ export function Header({ onCartClick }: HeaderProps) {
             <circle cx="9" cy="20" r="1.6" />
             <circle cx="18" cy="20" r="1.6" />
           </svg>
-          <span className="hidden sm:inline">Carrito</span>
+          <span className="hidden sm:inline">{count > 0 ? 'Ir a pagar' : 'Carrito'}</span>
           {count > 0 && (
-            <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-bloom-500 px-1 text-xs font-bold text-white">
+            <span className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 animate-pulse items-center justify-center rounded-full bg-red-600 px-1 text-xs font-bold text-white">
               {count}
             </span>
           )}
