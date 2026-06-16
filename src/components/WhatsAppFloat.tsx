@@ -14,10 +14,7 @@ export function WhatsAppFloat() {
         rel="noopener noreferrer"
         className="max-w-[220px] rounded-2xl rounded-br-sm bg-white px-4 py-2.5 text-xs font-medium text-gray-700 shadow-lg ring-1 ring-gray-200 hover:ring-bloom-300 transition"
       >
-        ¿Tienes alguna pregunta sobre este menú?{' '}
-        <span className="font-semibold text-bloom-600">
-          Presiona aquí para escribirle por WhatsApp a kalos.vzla
-        </span>
+¿Dudas? <span className="font-semibold text-bloom-600">Escríbenos por WhatsApp</span>
       </a>
 
       {/* Botón verde de WhatsApp */}

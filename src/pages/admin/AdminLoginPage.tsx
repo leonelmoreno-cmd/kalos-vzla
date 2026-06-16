@@ -21,9 +21,7 @@ export function AdminLoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-bloom-50 px-4">
       <form onSubmit={handleSubmit} className="card w-full max-w-sm p-6">
         <div className="mb-6 text-center">
-          <span className="text-3xl" aria-hidden>
-            🌸
-          </span>
+          <img src="/logo.png" alt="kalos.vzla" className="mx-auto h-12 w-auto" />
           <h1 className="mt-2 text-xl font-bold text-bloom-800">Panel de administración</h1>
           <p className="mt-1 text-sm text-gray-500">Ingresa tu contraseña para gestionar productos.</p>
         </div>
