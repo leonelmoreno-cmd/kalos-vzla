@@ -42,7 +42,7 @@ export function Header({ onCartClick }: HeaderProps) {
             {count > 0 ? 'Ir a pagar' : 'Carrito'}
           </span>
           {count > 0 && (
-            <span className="absolute -right-2 -top-2 flex h-7 min-w-7 items-center justify-center rounded-full bg-red-600 px-1.5 text-xs font-black text-white shadow-md animate-pulse">
+            <span className="absolute -right-2 -top-2 flex h-7 min-w-7 items-center justify-center rounded-full bg-red-600 px-1.5 text-xs font-black text-white shadow-md animate-blink">
               {count}
             </span>
           )}
